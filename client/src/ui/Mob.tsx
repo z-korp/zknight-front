@@ -340,7 +340,7 @@ const Mob: React.FC<MobProps> = ({
   return (
     <>
       <AnimatedSprite
-        zIndex={5}
+        zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
         x={isDead ? -100 /*lol*/ : absolutePosition.x}
         y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
