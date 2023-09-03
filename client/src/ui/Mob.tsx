@@ -353,14 +353,14 @@ const Mob: React.FC<MobProps> = ({
 
       {type === 'knight' &&
         !isMoving &&
-        isSelected &&
+        isHovered &&
         neighbors.map((move, index) => (
           <TileMarker key={index} x={move.tile.x} y={move.tile.y} color={move.action === 'walk' ? 'blue' : 'yellow'} />
         ))}
 
       {type !== 'knight' &&
         !isMoving &&
-        isSelected &&
+        isHovered &&
         neighbors.map((move, index) => (
           <TileMarker key={index} x={move.tile.x} y={move.tile.y} color={move.action === 'walk' ? 'blue' : 'yellow'} />
         ))}
