@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@dojoengine/core": "^0.0.17",
-    "@dojoengine/create-burner": "^0.0.15",
+    "@dojoengine/create-burner": "^0.0.17",
     "@dojoengine/react": "^0.0.3",
     "@latticexyz/recs": "^1.43.0",
     "@latticexyz/utils": "^1.43.0",
@@ -31,8 +31,8 @@
     "react-modal": "^3.16.1",
     "rxjs": "^7.8.1",
     "starknet": "^5.14.1",
-    "zustand": "^4.4.1",
-    "tailwindcss": "^3.3.3"
+    "tailwindcss": "^3.3.3",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
