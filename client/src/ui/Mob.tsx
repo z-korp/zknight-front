@@ -18,6 +18,7 @@ interface MobProps {
   getActionableTiles: (type: MobType) => ActionableTile[];
   health: number;
   isHitter: boolean;
+  knightPosition?: Coordinate;
 }
 
 enum Animation {
@@ -44,38 +45,38 @@ enum Direction {
   SW,
 }
 
-const getFramesFromType = (type: Animation, direction: Direction, resource: any): Texture[] => {
+const getFramesFromType = (mob_name: string, type: Animation, direction: Direction, resource: any): Texture[] => {
   const frames = Object.keys(resource.data.frames);
   let filtered = [];
   if (type === Animation.Idle) {
-    console.log('Idle Frame');
+    console.log('Idle Frame', mob_name);
     filtered = frames.filter((e) => e.includes('idle'));
   } else if (type === Animation.Walk) {
-    console.log('Walk Frame');
+    console.log('Walk Frame', mob_name);
     filtered = frames.filter((e) => e.includes('walk'));
   } else if (type === Animation.Carry) {
-    console.log('Carry Frame');
+    console.log('Carry Frame', mob_name);
     filtered = frames.filter((e) => e.includes('carry'));
   } else if (type === Animation.Jump) {
-    console.log('Jump Frame');
+    console.log('Jump Frame', mob_name);
     filtered = frames.filter((e) => e.includes('jump'));
   } else if (type === Animation.SwordAttack) {
-    console.log('SwordAttack Frame');
+    console.log('SwordAttack Frame', mob_name);
     filtered = frames.filter((e) => e.includes('sword'));
   } else if (type === Animation.BowAttack) {
-    console.log('BowAttack Frame');
-    filtered = frames.filter((e) => e.includes('bow'));
+    filtered = frames.filter((e) => e.includes('-bow'));
+    console.log('BowAttack Frame', mob_name);
   } else if (type === Animation.StaffAttack) {
-    console.log('StaveAttack Frame');
+    console.log('StaffAttack Frame', mob_name);
     filtered = frames.filter((e) => e.includes('staff'));
   } else if (type === Animation.Throw) {
-    console.log('Throw Frame');
+    console.log('Throw Frame', mob_name);
     filtered = frames.filter((e) => e.includes('throw'));
   } else if (type === Animation.Hurt) {
-    console.log('Hurt Frame');
+    console.log('Hurt Frame', mob_name);
     filtered = frames.filter((e) => e.includes('hurt'));
   } else if (type === Animation.Death) {
-    console.log('Death Frame');
+    console.log('Death Frame', mob_name);
     filtered = frames.filter((e) => e.includes('death'));
   } else {
     throw new Error('Invalid AnimationType');
@@ -126,6 +127,10 @@ const getDirection = (start: Coordinate, end: Coordinate, orientation: Direction
   return orientation; // Retourner NONE si aucune direction n'est trouvée
 };
 
+const getStartOrientation = (mob_coord: Coordinate, knight_position?: Coordinate) => {
+  return getDirection(mob_coord, knight_position ? knight_position : mob_coord, Direction.S);
+};
+
 const Mob: React.FC<MobProps> = ({
   type,
   grid,
@@ -136,10 +141,12 @@ const Mob: React.FC<MobProps> = ({
   getActionableTiles,
   health,
   isHitter,
+  knightPosition,
 }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [counterAnim, setCounterAnim] = useState(0);
-  const [orientation, setOrientation] = useState<Direction>(Direction.S);
+
+  const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
   const [neighbors, setNeighbors] = useState<ActionableTile[]>([]);
@@ -150,48 +157,65 @@ const Mob: React.FC<MobProps> = ({
   useEffect(() => {
     if (resource) {
       if (animation === Animation.Walk) {
-        setFrames(getFramesFromType(Animation.Walk, orientation, resource));
+        const or = getDirection(
+          to_grid_coordinate(absolutePosition),
+          to_grid_coordinate(absoluteTargetPosition),
+          orientation
+        );
+        setOrientation(or);
+        setFrames(getFramesFromType(type, Animation.Walk, or, resource));
       } else if (animation === Animation.BowAttack) {
-        setFrames(getFramesFromType(Animation.BowAttack, orientation, resource));
+        setFrames(getFramesFromType(type, Animation.BowAttack, orientation, resource));
       } else if (animation === Animation.StaffAttack) {
-        setFrames(getFramesFromType(Animation.StaffAttack, orientation, resource));
+        setFrames(getFramesFromType(type, Animation.StaffAttack, orientation, resource));
       } else if (animation === Animation.SwordAttack) {
-        setFrames(getFramesFromType(Animation.SwordAttack, orientation, resource));
+        setFrames(getFramesFromType(type, Animation.SwordAttack, orientation, resource));
       } else if (animation === Animation.Hurt) {
-        setFrames(getFramesFromType(Animation.Hurt, Direction.S, resource));
+        setFrames(getFramesFromType(type, Animation.Hurt, orientation, resource));
       } else if (animation === Animation.Death) {
-        setFrames(getFramesFromType(Animation.Death, orientation, resource));
+        setFrames(getFramesFromType(type, Animation.Death, orientation, resource));
       } else {
-        setFrames(getFramesFromType(Animation.Idle, orientation, resource));
+        setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animation, resource]);
 
   useEffect(() => {
+    setCurrentFrame(0);
     if (health === 0) {
-      setCurrentFrame(0);
       setAnimation(Animation.Death);
     } else {
-      setCurrentFrame(0);
       setAnimation(Animation.Hurt);
     }
   }, [health]);
 
+  useEffect(() => {
+    if (isMoving) {
+      setAnimation(Animation.Walk);
+    }
+  }, [isMoving]);
+
   const [isAttacking, setIsAttacking] = useState(false);
+
   useEffect(() => {
     if (isHitter === true) {
       setIsAttacking(true);
+    } else {
+      setIsAttacking(false);
     }
   }, [isHitter]);
 
   useEffect(() => {
     if (isAttacking === true) {
       setCurrentFrame(0);
+      const new_orientation = knightPosition ? getDirection(targetPosition, knightPosition, orientation) : orientation;
+      setOrientation(new_orientation);
       if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);
       else if (type === 'bowman') setAnimation(Animation.BowAttack);
       else if (type === 'wizard') setAnimation(Animation.StaffAttack);
     }
-  }, [isAttacking, type]);
+  }, [isAttacking, knightPosition, orientation, targetPosition, type]);
 
   // current position absolute during movement
   // will be changing during the movement, towards the absoluteTargetPosition
@@ -205,7 +229,6 @@ const Mob: React.FC<MobProps> = ({
     const load = async () => {
       const resource = await Assets.load(`assets/${type}/${type}.json`);
       setResource(resource);
-      // setFrames(getFramesFromType(Animation.Idle, Direction.SW, resource));
     };
     load();
     // init position
@@ -219,44 +242,56 @@ const Mob: React.FC<MobProps> = ({
 
   // Here we work only in absolute positions
   useTick(() => {
-    setCounterAnim((prevCounter) => prevCounter + 1);
-    if (counterAnim === 1000) setCounterAnim(0);
     const currentX = absolutePosition.x;
     const currentY = absolutePosition.y;
     const targetX = absoluteTargetPosition.x;
     const targetY = absoluteTargetPosition.y;
     if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
       setIsMoving(true);
-      if (animation !== Animation.Walk) {
-        setOrientation(
-          getDirection(to_grid_coordinate(absolutePosition), to_grid_coordinate(absoluteTargetPosition), orientation)
-        );
-        setAnimation(Animation.Walk);
-      }
       const newX = lerp(currentX, targetX, 0.05);
       const newY = lerp(currentY, targetY, 0.05);
       setAbsolutePosition({ x: newX, y: newY });
     } else {
       setIsMoving(false);
-      if (animation === Animation.Walk) {
-        setOrientation(
-          getDirection(to_grid_coordinate(absolutePosition), to_grid_coordinate(absoluteTargetPosition), orientation)
-        );
-        setAnimation(Animation.Idle);
-      }
     }
+  });
 
-    if (counterAnim % 10 === 0) {
-      if (animation === Animation.Walk || animation === Animation.Idle) {
-        if (frames && frames.length > 0) {
-          setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame
-        }
-      } else {
-        console.log('frames.length', currentFrame, frames.length);
-        if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-          setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [isDead, setIsDead] = useState(false);
+
+  useTick(() => {
+    if (shouldAnimate) {
+      setCounterAnim((prevCounter) => prevCounter + 1);
+      if (counterAnim === 1000) setCounterAnim(0);
+
+      if (counterAnim % 10 === 0) {
+        if (animation === Animation.Idle) {
+          // if IDLE, loop through frames
+          if (frames && frames.length > 0) {
+            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
+          }
         } else {
-          setAnimation(Animation.Idle);
+          // otherwise we do only the frames, and then go IDLE
+          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
+            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+          } else {
+            // last frame of the animation
+            if (animation === Animation.Death) {
+              setShouldAnimate(false);
+              setIsDead(true);
+            } else if (
+              animation === Animation.BowAttack ||
+              animation === Animation.StaffAttack ||
+              animation === Animation.SwordAttack
+            ) {
+              setCurrentFrame(0);
+              setIsAttacking(false);
+              setAnimation(Animation.Idle);
+            } else {
+              setCurrentFrame(0);
+              setAnimation(Animation.Idle);
+            }
+          }
         }
       }
     }
@@ -298,8 +333,8 @@ const Mob: React.FC<MobProps> = ({
     <>
       <AnimatedSprite
         zIndex={5}
-        x={absolutePosition.x}
-        y={absolutePosition.y - 36}
+        x={isDead ? -100 /*lol*/ : absolutePosition.x}
+        y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
         scale={2}
         isPlaying={false}

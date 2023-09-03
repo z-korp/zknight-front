@@ -85,7 +85,7 @@ export async function setComponentsFromEvents(
   for (const event of events) {
     const name = await setComponentFromEvent(components, event.data, add_hole, set_size);
     if (Map_size !== undefined && Number_of_holes >= Map_size) {
-      if (name === 'Character') await sleep(500);
+      if (name === 'Character') await sleep(800);
     }
   }
 }

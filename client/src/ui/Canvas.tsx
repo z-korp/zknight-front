@@ -108,6 +108,7 @@ const Canvas = () => {
             getActionableTiles={getActionableTiles}
             health={knight.health}
             isHitter={hitter === TileType.Knight}
+            knightPosition={knight.position}
           />
         )}
 
@@ -122,6 +123,7 @@ const Canvas = () => {
             getActionableTiles={getActionableTiles}
             health={barbarian.health}
             isHitter={hitter === TileType.Barbarian}
+            knightPosition={knight.position}
           />
         )}
         {bowman.position && bowman.health !== undefined && (
@@ -135,6 +137,7 @@ const Canvas = () => {
             getActionableTiles={getActionableTiles}
             health={bowman.health}
             isHitter={hitter === TileType.Bowman}
+            knightPosition={knight.position}
           />
         )}
         {wizard.position && wizard.health !== undefined && (
@@ -148,6 +151,7 @@ const Canvas = () => {
             getActionableTiles={getActionableTiles}
             health={wizard.health}
             isHitter={hitter === TileType.Wizard}
+            knightPosition={knight.position}
           />
         )}
 
