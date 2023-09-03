@@ -198,19 +198,26 @@ function App() {
             </div>
 
             <div className="flex flex-col items-start card">
-              <hr className="my-10 border-2" />
+              <hr className="my-5 border-2" />
 
               <h2 className="text-black mb-2">Resources Used :</h2>
-              <p className="mb-4">
-                <a
-                  href="https://merchant-shade.itch.io/16x16-puny-characters-plus-sprites"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black"
-                >
-                  Pixel art by Merchant Shade
-                </a>
-              </p>
+              <ul>
+                <li>
+                  <a
+                    href="https://merchant-shade.itch.io/16x16-puny-characters-plus-sprites"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black"
+                  >
+                    Pixel art by Merchant Shade
+                  </a>
+                </li>
+                <li>
+                  <a href="https://pixijs.io/" target="_blank" rel="noopener noreferrer" className="text-black">
+                    Pixijs
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
