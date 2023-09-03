@@ -2,13 +2,14 @@ import { sound } from '@pixi/sound';
 import 'font-awesome/css/font-awesome.min.css';
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import { shortString } from 'starknet';
 import { useDojo } from './DojoContext';
 import twitterPixelIcon from './assets/twitter_pixel_icon.png'; // Ajustez le chemin d'accès à votre projet
 import Canvas from './ui/Canvas';
 import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
 import Leaderboard from './ui/Leaderboard';
+import { fetchData } from './utils/fetchData';
+import { useElementStore } from './utils/store';
 
 const gamesa = [
   { stage: 1, score: 100, player: '0x123' },
@@ -38,6 +39,8 @@ function App() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLeaderBoardModalOpen, setLeaderBoardModalOpen] = useState(false);
   const [isMusicPlaying, setMusicPlaying] = useState(false);
+
+  const { add_to_leaderboard } = useElementStore((state) => state);
 
   useEffect(() => {
     if (isMusicPlaying) {
@@ -82,42 +85,16 @@ function App() {
     toggleModal();
   };
 
-  const [games, setGames] = useState<{ stage: number; score: number; player: string }[]>(gamesa);
-
   useEffect(() => {
     sound.add('my-sound', './assets/music.mp3');
-    const fetchData = async () => {
-      try {
-        const { data } = await graphSdk.getFinishedGames();
 
-        console.log('data', data);
-        if (data && data.mapComponents && data.mapComponents.edges) {
-          const gameComponentsWithKeys: any[] = [];
-
-          data.mapComponents.edges.forEach((edge) => {
-            if (edge && edge.node?.score !== undefined && edge.node?.name && edge.node?.level) {
-              gameComponentsWithKeys.push({
-                score: edge.node?.score,
-                level: edge.node?.level,
-                player: shortString.decodeShortString(edge.node?.name),
-              });
-            }
-          });
-
-          console.log('gameComponentsWithKeys', gameComponentsWithKeys);
-          setGames(gameComponentsWithKeys);
-        }
-      } catch (error) {
-        console.error('Error fetching games:', error);
-      }
+    const fetchAndProcessData = async () => {
+      const array = await fetchData(graphSdk);
+      array.forEach((e) => add_to_leaderboard(e));
     };
 
-    fetchData();
+    fetchAndProcessData();
   }, []);
-
-  useEffect(() => {
-    console.log('games', games);
-  }, [games]);
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -217,7 +194,7 @@ function App() {
               <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
             </div>
           </button>
-          <Leaderboard games={games} />
+          <Leaderboard />
         </div>
       </Modal>
     </div>

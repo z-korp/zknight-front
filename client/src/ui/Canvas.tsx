@@ -8,6 +8,7 @@ import skull from '../assets/skull.png';
 import { TileType, useComponentStates } from '../hooks/useComponentStates';
 import { useGrid } from '../hooks/useGrid';
 import { Coordinate, GridElement } from '../type/GridElement';
+import { fetchData } from '../utils/fetchData';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, generateGrid, to_grid_coordinate } from '../utils/grid';
 import { getNeighbors } from '../utils/pathfinding';
 import { useElementStore } from '../utils/store';
@@ -26,6 +27,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const {
     setup: {
       systemCalls: { play, spawn, create },
+      network: { graphSdk },
     },
     account: { account },
   } = useDojo();
@@ -42,7 +44,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
-  const { map, add_hole, set_size, reset_holes, set_ip } = useElementStore((state) => state);
+  const { map, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard } = useElementStore((state) => state);
 
   const [pseudo, setPseudo] = useState('');
   const [ip, setIp] = useState<number>(0);
@@ -71,6 +73,15 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
       setIsGameOver(true);
     }
   }, [knight.health]);
+
+  useEffect(() => {
+    const fetchAndProcessData = async () => {
+      const array = await fetchData(graphSdk);
+      array.forEach((e) => add_to_leaderboard(e));
+    };
+
+    fetchAndProcessData();
+  }, [isGameOver]);
 
   useEffect(() => {
     setGrid(generateGrid(map));

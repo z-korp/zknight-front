@@ -30,7 +30,7 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
         placeholder="Pseudo"
         value={username}
         onChange={handleInputChange}
-        maxLength={30} // Limit the input to 30 characters
+        maxLength={18} // Limit the input to 30 characters
       />
       <NewGameButton onClick={onClick} disabled={!username.trim()}></NewGameButton>
     </div>
