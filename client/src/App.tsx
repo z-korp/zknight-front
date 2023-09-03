@@ -89,7 +89,24 @@ function App() {
     fetchData();
   }, [account.address]);
 
-  const [games, setGames] = useState<any[]>([]);
+  // const [games, setGames] = useState<any[]>([]);
+
+  const games = [
+    { id: 1, score: 100, player: '0x123' },
+    { id: 2, score: 90, player: '0x124' },
+    { id: 3, score: 95, player: '0x125' },
+    { id: 4, score: 110, player: '0x123' },
+    { id: 5, score: 120, player: '0x126' },
+    { id: 6, score: 85, player: '0x124' },
+    { id: 7, score: 105, player: '0x127' },
+    { id: 8, score: 80, player: '0x128' },
+    { id: 9, score: 110, player: '0x129' },
+    { id: 10, score: 70, player: '0x130' },
+    { id: 11, score: 100, player: '0x131' },
+    { id: 12, score: 60, player: '0x132' },
+    { id: 13, score: 85, player: '0x133' },
+    { id: 14, score: 75, player: '0x134' },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,8 +118,11 @@ function App() {
 
           data.entities.edges.forEach((edge) => {
             if (edge && edge.node && edge.node.components) {
+              // console.log('edge', edge);
               edge.node.components.forEach((component) => {
+                // console.log('component', component);
                 if (component && component.__typename === 'Game') {
+                  // console.log('component', component);
                   if (edge?.node?.keys && edge?.node?.keys[0]) {
                     gameComponentsWithKeys.push({
                       id: component.game_id,
@@ -115,7 +135,7 @@ function App() {
             }
           });
 
-          setGames(gameComponentsWithKeys);
+          // setGames(gameComponentsWithKeys);
         }
       } catch (error) {
         console.error('Error fetching games:', error);
@@ -124,6 +144,10 @@ function App() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log('games', games);
+  }, [games]);
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -209,7 +233,29 @@ function App() {
           <hr className="my-4 border-2" />
 
           <div className="flex flex-col items-center justify-between">
-            {/* Votre logique pour afficher les données du classement ici */}
+            {/* Grouper par joueur et trouver le meilleur score pour chaque joueur */}
+            {(() => {
+              const playerScores: { [key: string]: number } = {};
+              for (const game of games) {
+                if (!playerScores[game.player] || playerScores[game.player] < game.score) {
+                  playerScores[game.player] = game.score;
+                }
+              }
+
+              // Convertir l'objet en un tableau et trier par score
+              const sortedPlayers = Object.keys(playerScores)
+                .map((player) => ({ player, score: playerScores[player] }))
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 10); // Prendre les 10 premiers
+
+              return sortedPlayers.map((entry, index) => (
+                <div key={index} className="flex justify-around w-full  py-2 text-black">
+                  <span className="w-10 text-right">{index + 1}.</span>
+                  <span className="mr-50 w-40">{entry.player}</span>
+                  <span className="ml-50 w-40 text-right">{entry.score}</span>
+                </div>
+              ));
+            })()}
           </div>
         </div>
       </Modal>
