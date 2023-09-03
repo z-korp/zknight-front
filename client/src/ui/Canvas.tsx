@@ -18,15 +18,16 @@ import PassTurnButton from './PassTurnButton';
 const Canvas = () => {
   const {
     setup: {
-      systemCalls: { play },
+      systemCalls: { play, spawn },
     },
     account: { account },
   } = useDojo();
 
   const contractState = useComponentStates();
-  const { knight, barbarian, wizard, bowman, hitter, game } = contractState;
+  const { knight, barbarian, wizard, bowman, hitter, game, map: mapState } = contractState;
 
   const [score, setScore] = useState<number>(0);
+  const [level, setLevel] = useState<number>(0);
   const [grid, setGrid] = useState<GridElement[][]>([]);
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [selectedTile, setSelectedTile] = useState<Coordinate | undefined>(undefined);
@@ -40,9 +41,10 @@ const Canvas = () => {
     }
   }, [knight.health]);
 
-  const { map, add_hole, set_size } = useElementStore((state) => state);
+  const { map, add_hole, set_size, reset_holes } = useElementStore((state) => state);
 
   useEffect(() => {
+    console.log('map changed, generateGrid');
     setGrid(generateGrid(map));
   }, [map]);
 
@@ -50,11 +52,23 @@ const Canvas = () => {
     if (game.score) setScore(game.score);
   }, [game.score]);
 
+  useEffect(() => {
+    if (mapState.level) setLevel(mapState.level);
+  }, [mapState]);
+
+  useEffect(() => {
+    console.log('mapState', mapState);
+    if (mapState.spawn === 0) {
+      console.log('spawnnnnn');
+      spawn(account, add_hole, set_size, reset_holes);
+    }
+  }, [mapState.spawn]);
+
   const { getActionableTiles } = useGrid(grid);
 
   const passTurn = () => {
     // pass turn is a play but with same position
-    if (knight.position) play(account, knight.position?.x, knight.position?.y, add_hole, set_size);
+    if (knight.position) play(account, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
@@ -107,7 +121,7 @@ const Canvas = () => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              play(account, tileX, tileY, add_hole, set_size);
+              play(account, tileX, tileY, add_hole, set_size, reset_holes);
             }
           }
         }}
@@ -176,7 +190,7 @@ const Canvas = () => {
           {map.size !== 0 && hoveredTile && absolutePosition && (
             <>
               <Text
-                text={`SCORE: ${score}`}
+                text={`STAGE: ${level}`}
                 x={20}
                 y={50}
                 style={
@@ -189,7 +203,21 @@ const Canvas = () => {
                   })
                 }
               />
-              {/* <Text
+              <Text
+                text={`SCORE: ${score}`}
+                x={20}
+                y={85}
+                style={
+                  new PIXI.TextStyle({
+                    align: 'center',
+                    fontFamily: '"Press Start 2P", Helvetica, sans-serif',
+                    fontSize: 20,
+                    fontWeight: '400',
+                    fill: '#ffffff',
+                  })
+                }
+              />
+              <Text
                 text={`(${hoveredTile.x}, ${hoveredTile.y})`}
                 x={20}
                 y={100}
@@ -217,7 +245,7 @@ const Canvas = () => {
                     fill: '#ffffff',
                   })
                 }
-              /> */}
+              />
             </>
           )}
           {map.size !== 0 &&

@@ -48,7 +48,7 @@ function App() {
     },
   };
 
-  const { add_hole, set_size } = useElementStore((state) => state);
+  const { add_hole, set_size, reset_holes } = useElementStore((state) => state);
 
   // entity id - this example uses the account address as the entity id
   const entityId = account.address;
@@ -66,7 +66,7 @@ function App() {
     // await call('someNetworkFunction', { someParam: 'someValue' });
     // Autres initialisations
     // ...
-    create(account, 1000, add_hole, set_size);
+    create(account, 10000, add_hole, set_size, reset_holes);
   };
 
   const credits = async () => {
