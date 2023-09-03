@@ -11,8 +11,8 @@ const h = 32 * 2;
 
 const NUMBER_TILES = 8;
 
-export const WIDTH = 1300;
-export const HEIGHT = 650;
+export const WIDTH = 1200;
+export const HEIGHT = 600;
 
 export const H_OFFSET = (HEIGHT - (NUMBER_TILES * h) / 2) / 2;
 

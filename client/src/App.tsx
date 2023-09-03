@@ -164,7 +164,10 @@ function App() {
       >
         <div className="relative">
           <button onClick={toggleLeaderBoardModal} className="absolute top-[-10px] right-0 p-2">
-            {/* ... */}
+            <div className="relative w-6 h-6">
+              <div className="absolute inset-0 w-1 h-full bg-black transform rotate-45 origin-center"></div>
+              <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
+            </div>
           </button>
           <h1 className="text-black mb-4 text-center">Leaderboard</h1>
           <hr className="my-4 border-2" />
