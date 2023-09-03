@@ -206,4 +206,54 @@ mod Tests {
         let barbarian_char = get!(world, (game.game_id, BARBARIAN_TYPE).into(), (Character));
         assert(barbarian_char.health == MOB_HEALTH, 'Wrong barbarian health');
     }
+
+    #[test]
+    #[available_gas(1_000_000_000)]
+    fn test_create_1001() {
+        // [Setup]
+        let world = Setup::spawn_game();
+
+        // [Create] Generate
+        let seed = 1000;
+        world.execute('Create', array![seed]);
+        
+        // [Play] Move
+        let target_tile = TileTrait::new(7, 2);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(7, 1);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(6, 1);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(6, 0);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(5, 0);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(4, 0);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(4, 1);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Attack
+        let target_tile = TileTrait::new(4, 2);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(4, 2);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Attack
+        let target_tile = TileTrait::new(4, 3);
+        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+
+        // [Spawn]
+        world.execute('Spawn', array![]);
+
+        // [Assert] Map
+        let game = get!(world, starknet::get_contract_address(), (Game));
+        let map = get!(world, game.game_id, (Map));
+        assert(map.spawn == true, 'Wrong spawn');
+    }
 }
