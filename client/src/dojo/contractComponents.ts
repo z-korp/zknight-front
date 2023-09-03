@@ -27,10 +27,8 @@ export function defineContractComponents(world: World) {
         world,
         {
           game_id: RecsType.Number,
-          score: RecsType.Number,
           over: RecsType.Boolean,
           seed: RecsType.Number,
-          name: RecsType.String,
         },
         {
           metadata: {
@@ -47,6 +45,9 @@ export function defineContractComponents(world: World) {
           level: RecsType.Number,
           size: RecsType.Number,
           spawn: RecsType.Number, // true: map is playing, false: the player has finished its level, should call spawn
+          score: RecsType.Number,
+          over: RecsType.Boolean,
+          name: RecsType.String,
         },
         {
           metadata: {

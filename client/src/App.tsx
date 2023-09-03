@@ -8,6 +8,24 @@ import twitterPixelIcon from './assets/twitter_pixel_icon.png'; // Ajustez le ch
 import Canvas from './ui/Canvas';
 import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
+import Leaderboard from './ui/Leaderboard';
+
+const gamesa = [
+  { stage: 1, score: 100, player: '0x123' },
+  { stage: 2, score: 90, player: '0x124' },
+  { stage: 3, score: 95, player: '0x125' },
+  { stage: 4, score: 110, player: '0x123' },
+  { stage: 5, score: 120, player: '0x126' },
+  { stage: 6, score: 85, player: '0x124' },
+  { stage: 7, score: 105, player: '0x127' },
+  { stage: 8, score: 80, player: '0x128' },
+  { stage: 9, score: 110, player: '0x129' },
+  { stage: 10, score: 70, player: '0x130' },
+  { stage: 11, score: 100, player: '0x131' },
+  { stage: 12, score: 60, player: '0x132' },
+  { stage: 13, score: 85, player: '0x133' },
+  { stage: 14, score: 75, player: '0x134' },
+];
 
 function App() {
   const {
@@ -64,7 +82,7 @@ function App() {
     toggleModal();
   };
 
-  const [games, setGames] = useState<{ id: number; score: number; player: string }[]>([]);
+  const [games, setGames] = useState<{ stage: number; score: number; player: string }[]>(gamesa);
 
   useEffect(() => {
     sound.add('my-sound', './assets/music.mp3');
@@ -73,19 +91,20 @@ function App() {
         const { data } = await graphSdk.getFinishedGames();
 
         console.log('data', data);
-        if (data && data.gameComponents && data.gameComponents.edges) {
+        if (data && data.mapComponents && data.mapComponents.edges) {
           const gameComponentsWithKeys: any[] = [];
 
-          data.gameComponents.edges.forEach((edge) => {
-            if (edge && edge.node?.game_id && edge.node?.score && edge.node?.name) {
+          data.mapComponents.edges.forEach((edge) => {
+            if (edge && edge.node?.score !== undefined && edge.node?.name && edge.node?.level) {
               gameComponentsWithKeys.push({
-                id: edge.node?.game_id,
                 score: edge.node?.score,
+                level: edge.node?.level,
                 player: shortString.decodeShortString(edge.node?.name),
               });
             }
           });
 
+          console.log('gameComponentsWithKeys', gameComponentsWithKeys);
           setGames(gameComponentsWithKeys);
         }
       } catch (error) {
@@ -198,34 +217,7 @@ function App() {
               <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
             </div>
           </button>
-          <h1 className="text-black mb-4 text-center">Leaderboard</h1>
-          <hr className="my-4 border-2" />
-
-          <div className="flex flex-col items-center justify-between">
-            {/* Grouper par joueur et trouver le meilleur score pour chaque joueur */}
-            {(() => {
-              const playerScores: { [key: string]: number } = {};
-              for (const game of games) {
-                if (!playerScores[game.player] || playerScores[game.player] < game.score) {
-                  playerScores[game.player] = game.score;
-                }
-              }
-
-              // Convertir l'objet en un tableau et trier par score
-              const sortedPlayers = Object.keys(playerScores)
-                .map((player) => ({ player, score: playerScores[player] }))
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 10); // Prendre les 10 premiers
-
-              return sortedPlayers.map((entry, index) => (
-                <div key={index} className="flex justify-around w-full  py-2 text-black">
-                  <span className="w-10 text-right">{index + 1}.</span>
-                  <span className="mr-50 w-40">{entry.player}</span>
-                  <span className="ml-50 w-40 text-right">{entry.score}</span>
-                </div>
-              ));
-            })()}
-          </div>
+          <Leaderboard games={games} />
         </div>
       </Modal>
     </div>

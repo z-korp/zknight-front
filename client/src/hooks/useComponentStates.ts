@@ -142,8 +142,8 @@ export const useComponentStates = () => {
   //console.log(knight_position, barbarian_position, bowman_position, wizard_position);
 
   return {
-    game: { id: game?.game_id, score: game?.score, over: game?.over, seed: game?.seed },
-    map: { level: map?.level, size: map?.size, spawn: map?.spawn },
+    game: { id: game?.game_id, over: game?.over, seed: game?.seed },
+    map: { level: map?.level, size: map?.size, spawn: map?.spawn, score: map?.score, over: map?.over, name: map?.name },
     knight: createMob('knight', knight?.health, knight_position, knight?.hitter, knight?.hit),
     barbarian: createMob('barbarian', barbarian?.health, barbarian_position, barbarian?.hitter, barbarian?.hit),
     bowman: createMob('bowman', bowman?.health, bowman_position, bowman?.hitter, bowman?.hit),

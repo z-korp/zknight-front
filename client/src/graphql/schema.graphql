@@ -46,3 +46,15 @@ query getFinishedGames {
     }
   }
 }
+
+query getFinishedMaps {
+  mapComponents {
+    edges {
+      node {
+        score
+        over
+        name
+      }
+    }
+  }
+}

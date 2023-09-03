@@ -77,8 +77,8 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   }, [map]);
 
   useEffect(() => {
-    if (game.score) setScore(game.score);
-  }, [game.score]);
+    if (mapState.score) setScore(mapState.score);
+  }, [mapState.score]);
 
   useEffect(() => {
     if (mapState.level) setLevel(mapState.level);

@@ -184,8 +184,12 @@ export function setComponentFromEvent(
   let gameId = 0;
   if (componentName === 'Map') {
     const [game_id] = keys;
-    const [level, size, spawn] = values;
-    console.log(`[Map: KEYS: (game_id: ${game_id}) - VALUES: (level: ${level}, size: ${size}, spawn: ${spawn})]`);
+    const [level, size, spawn, score, over, name] = values;
+    console.log(
+      `[Map: KEYS: (game_id: ${game_id}) - VALUES: (level: ${level}, size: ${size}, spawn: ${spawn}, score: ${Number(
+        score
+      )}), over: ${Boolean(Number(over))}, name: ${shortString.decodeShortString(name)}]`
+    );
     set_size(Number(values[1]));
     Map_size = Number(values[1]);
     if (Number(spawn) === 0) {
@@ -193,12 +197,12 @@ export function setComponentFromEvent(
     }
   } else if (componentName === 'Game') {
     const [player_id] = keys;
-    const [game_id, score, over, seed, name] = values;
+    const [game_id, over, seed] = values;
     gameId = Number(game_id);
     console.log(
-      `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(
-        score
-      )}, over: ${Boolean(Number(over))}, seed: ${Number(seed)}, name: ${shortString.decodeShortString(name)})]`
+      `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, over: ${Boolean(
+        Number(over)
+      )}, seed: ${Number(seed)}, )]`
     );
   } else if (componentName === 'Tile') {
     const [game_id, map_id, index] = keys;

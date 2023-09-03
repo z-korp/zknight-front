@@ -454,14 +454,14 @@ export type GetFinishedGamesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFinishedGamesQuery = {
   __typename?: 'Query';
-  gameComponents?: {
-    __typename?: 'GameConnection';
+  mapComponents?: {
+    __typename?: 'MapConnection';
     edges?: Array<{
-      __typename?: 'GameEdge';
+      __typename?: 'MapEdge';
       node?: {
-        __typename?: 'Game';
-        game_id?: any | null;
+        __typename?: 'Map';
         score?: any | null;
+        level?: any | null;
         over?: any | null;
         name?: string | null;
       } | null;
@@ -508,13 +508,13 @@ export const GetEntitiesDocument = gql`
 `;
 export const GetFinishedGamesDocument = gql`
   query getFinishedGames {
-    gameComponents(where: { over: 1 }) {
+    mapComponents {
       edges {
         node {
-          game_id
           score
           over
           name
+          level
         }
       }
     }
