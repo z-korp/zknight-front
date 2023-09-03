@@ -2,37 +2,18 @@ import { sound } from '@pixi/sound';
 import 'font-awesome/css/font-awesome.min.css';
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
+import { shortString } from 'starknet';
 import { useDojo } from './DojoContext';
 import twitterPixelIcon from './assets/twitter_pixel_icon.png'; // Ajustez le chemin d'accès à votre projet
 import Canvas from './ui/Canvas';
 import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
 
-const games = [
-  { id: 1, score: 100, player: '0x123' },
-  { id: 2, score: 90, player: '0x124' },
-  { id: 3, score: 95, player: '0x125' },
-  { id: 4, score: 110, player: '0x123' },
-  { id: 5, score: 120, player: '0x126' },
-  { id: 6, score: 85, player: '0x124' },
-  { id: 7, score: 105, player: '0x127' },
-  { id: 8, score: 80, player: '0x128' },
-  { id: 9, score: 110, player: '0x129' },
-  { id: 10, score: 70, player: '0x130' },
-  { id: 11, score: 100, player: '0x131' },
-  { id: 12, score: 60, player: '0x132' },
-  { id: 13, score: 85, player: '0x133' },
-  { id: 14, score: 75, player: '0x134' },
-];
-
-// import * as PIXI from 'pixi.js';
-
 function App() {
   const {
     setup: {
       network: { graphSdk },
     },
-    account: { account },
   } = useDojo();
 
   Modal.setAppElement('#root');
@@ -79,32 +60,11 @@ function App() {
     },
   };
 
-  // entity id - this example uses the account address as the entity id
-  const entityId = account.address;
-
-  // get current component values
-  //const position = useComponentValue(Position, parseInt(entityId.toString()) as EntityIndex);
-  //const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
-
   const credits = async () => {
     toggleModal();
   };
 
-  useEffect(() => {
-    if (!entityId) return;
-
-    const fetchData = async () => {
-      const { data } = await graphSdk.getEntities();
-
-      if (data) {
-        //const remaining = getFirstComponentByType(data.entities?.edges, 'Moves') as Moves;
-        //const position = getFirstComponentByType(data.entities?.edges, 'Position') as Position;
-        //setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, { remaining: remaining.remaining });
-        //setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: position.x, y: position.y });
-      }
-    };
-    fetchData();
-  }, [account.address]);
+  const [games, setGames] = useState<{ id: number; score: number; player: string }[]>([]);
 
   useEffect(() => {
     sound.add('my-sound', './assets/music.mp3');
@@ -112,29 +72,21 @@ function App() {
       try {
         const { data } = await graphSdk.getFinishedGames();
 
-        if (data && data.entities && data.entities.edges) {
+        console.log('data', data);
+        if (data && data.gameComponents && data.gameComponents.edges) {
           const gameComponentsWithKeys: any[] = [];
 
-          data.entities.edges.forEach((edge) => {
-            if (edge && edge.node && edge.node.components) {
-              // console.log('edge', edge);
-              edge.node.components.forEach((component) => {
-                // console.log('component', component);
-                if (component && component.__typename === 'Game') {
-                  // console.log('component', component);
-                  if (edge?.node?.keys && edge?.node?.keys[0]) {
-                    gameComponentsWithKeys.push({
-                      id: component.game_id,
-                      score: component.score,
-                      player: edge?.node?.keys[0],
-                    });
-                  }
-                }
+          data.gameComponents.edges.forEach((edge) => {
+            if (edge && edge.node?.game_id && edge.node?.score && edge.node?.name) {
+              gameComponentsWithKeys.push({
+                id: edge.node?.game_id,
+                score: edge.node?.score,
+                player: shortString.decodeShortString(edge.node?.name),
               });
             }
           });
 
-          // setGames(gameComponentsWithKeys);
+          setGames(gameComponentsWithKeys);
         }
       } catch (error) {
         console.error('Error fetching games:', error);
