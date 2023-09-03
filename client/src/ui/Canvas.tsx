@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDojo } from '../DojoContext';
 import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
-import { useComponentStates } from '../hooks/useComponentStates';
+import { TileType, useComponentStates } from '../hooks/useComponentStates';
 import { useGrid } from '../hooks/useGrid';
 import { Coordinate, GridElement } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, generateGrid, to_grid_coordinate } from '../utils/grid';
@@ -23,7 +23,7 @@ const Canvas = () => {
   } = useDojo();
 
   const contractState = useComponentStates();
-  const { knight, barbarian, wizard, bowman, game } = contractState;
+  const { knight, barbarian, wizard, bowman, hitter, game } = contractState;
 
   const [score, setScore] = useState<number>(0);
   const [grid, setGrid] = useState<GridElement[][]>([]);
@@ -119,6 +119,7 @@ const Canvas = () => {
               isSelected={selectedMob !== undefined && selectedMob === 'knight'}
               getActionableTiles={getActionableTiles}
               health={knight.health}
+              isHitter={hitter === TileType.Knight}
             />
           )}
 
@@ -132,6 +133,7 @@ const Canvas = () => {
               isSelected={selectedMob !== undefined && selectedMob === 'barbarian'}
               getActionableTiles={getActionableTiles}
               health={barbarian.health}
+              isHitter={hitter === TileType.Barbarian}
             />
           )}
           {bowman.position && bowman.health !== undefined && (
@@ -144,6 +146,7 @@ const Canvas = () => {
               isSelected={selectedMob !== undefined && selectedMob === 'bowman'}
               getActionableTiles={getActionableTiles}
               health={bowman.health}
+              isHitter={hitter === TileType.Bowman}
             />
           )}
           {wizard.position && wizard.health !== undefined && (
@@ -156,6 +159,47 @@ const Canvas = () => {
               isSelected={selectedMob !== undefined && selectedMob === 'wizard'}
               getActionableTiles={getActionableTiles}
               health={wizard.health}
+              isHitter={hitter === TileType.Wizard}
+            />
+          )}
+
+          {barbarian.position && barbarian.health !== undefined && (
+            <Mob
+              type="barbarian"
+              grid={grid}
+              targetPosition={barbarian.position}
+              selectedTile={selectedTile}
+              hoveredTile={hoveredTile}
+              isSelected={selectedMob !== undefined && selectedMob === 'barbarian'}
+              getActionableTiles={getActionableTiles}
+              health={barbarian.health}
+              isHitter={hitter === TileType.Barbarian}
+            />
+          )}
+          {bowman.position && bowman.health !== undefined && (
+            <Mob
+              type="bowman"
+              grid={grid}
+              targetPosition={bowman.position}
+              selectedTile={selectedTile}
+              hoveredTile={hoveredTile}
+              isSelected={selectedMob !== undefined && selectedMob === 'bowman'}
+              getActionableTiles={getActionableTiles}
+              health={bowman.health}
+              isHitter={hitter === TileType.Bowman}
+            />
+          )}
+          {wizard.position && wizard.health !== undefined && (
+            <Mob
+              type="wizard"
+              grid={grid}
+              targetPosition={wizard.position}
+              selectedTile={selectedTile}
+              hoveredTile={hoveredTile}
+              isSelected={selectedMob !== undefined && selectedMob === 'wizard'}
+              getActionableTiles={getActionableTiles}
+              health={wizard.health}
+              isHitter={hitter === TileType.Wizard}
             />
           )}
 
