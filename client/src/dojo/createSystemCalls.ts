@@ -1,4 +1,4 @@
-import { Components, EntityIndex, Schema, setComponent } from '@latticexyz/recs';
+import { Components, EntityIndex, Schema, setComponent, updateComponent } from '@latticexyz/recs';
 import { poseidonHashMany } from 'micro-starknet';
 import { Account, Event, InvokeTransactionReceiptResponse } from 'starknet';
 import { TileType } from '../hooks/useComponentStates';
@@ -12,7 +12,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { execute, contractComponents }: SetupNetworkResult,
-  { Barbarian, Knight, Map, Position, Game }: ClientComponents
+  { Character }: ClientComponents
 ) {
   const create = async (
     signer: Account,
@@ -59,10 +59,16 @@ export function createSystemCalls(
 
       const events = receipt.events;
 
+      let game_id = 0;
       if (events) {
-        setComponentsFromEvents(contractComponents, events, add_hole, set_size);
+        game_id = await setComponentsFromEvents(contractComponents, events, add_hole, set_size);
         console.log(receipt);
       }
+
+      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Wizard)]), { hitter: 0 });
+      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Barbarian)]), { hitter: 0 });
+      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Knight)]), { hitter: 0 });
+      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Bowman)]), { hitter: 0 });
     } catch (e) {
       console.log(e);
     } finally {
@@ -82,15 +88,19 @@ export async function setComponentsFromEvents(
   add_hole: (x: number, y: number) => void,
   set_size: (size: number) => void
 ) {
+  let game_id = 0;
   for (const event of events) {
-    const name = await setComponentFromEvent(components, event.data, add_hole, set_size);
+    const { componentName: name, gameId } = setComponentFromEvent(components, event.data, add_hole, set_size);
+    game_id = gameId;
     if (Map_size !== undefined && Number_of_holes >= Map_size) {
       if (name === 'Character') await sleep(800);
     }
   }
+  await sleep(1000);
+  return game_id;
 }
 
-export async function setComponentFromEvent(
+export function setComponentFromEvent(
   components: Components,
   eventData: string[],
   add_hole: (x: number, y: number) => void,
@@ -103,23 +113,6 @@ export async function setComponentFromEvent(
   // retrieve the component from name
   const component = components[componentName];
 
-  /*if (!component) {
-    // event custom
-    console.log('Custom event', componentName);
-
-    // get values
-    const numberOfValues = parseInt(eventData[1]);
-    console.log('numberOfValues', numberOfValues);
-
-    // get values
-    const values = eventData.slice(1, 1 + numberOfValues);
-    console.log('values', values);
-    if (componentName === 'HolePosition') {
-      const [game_id, map_id, x, y] = values;
-      console.log(`[Hole Position - game_id: ${game_id}, map_id: ${map_id}, position: (${Number(x)}, ${Number(y)})]`);
-      add_hole(Number(x), Number(y));
-    }
-  } else {*/
   // get keys
   const keysNumber = parseInt(eventData[1]);
   let index = 2 + keysNumber + 1;
@@ -145,6 +138,7 @@ export async function setComponentFromEvent(
   // set component
   setComponent(component, entityIndex, componentValues);
 
+  let gameId = 0;
   if (componentName === 'Map') {
     const [game_id] = keys;
     const [level, size, spawn] = values;
@@ -154,6 +148,7 @@ export async function setComponentFromEvent(
   } else if (componentName === 'Game') {
     const [player_id] = keys;
     const [game_id, score, over, seed] = values;
+    gameId = Number(game_id);
     console.log(
       `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(
         score
@@ -190,7 +185,7 @@ export async function setComponentFromEvent(
   //}
 
   console.log('------------------');
-  return componentName;
+  return { componentName, gameId };
 }
 
 // DISCUSSION: MUD expects Numbers, but entities in Starknet are BigInts (from poseidon hash)
