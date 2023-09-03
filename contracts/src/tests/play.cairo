@@ -183,6 +183,7 @@ mod Tests {
         let game = get!(world, starknet::get_contract_address(), (Game));
         assert(game.game_id == 0, 'Wrong game id');
         assert(game.score == 19, 'Wrong score');
+        assert(game.over == false, 'Wrong over status');
         assert(game.seed == SEED + 1, 'Wrong seed');
 
         // [Assert] Barbarian Character
