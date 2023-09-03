@@ -17,11 +17,11 @@ mod Spawn {
         let game = get!(ctx.world, ctx.origin, (Game));
 
         // [Check] Map must not be spawned
-        let previous_map = get!(ctx.world, ctx.origin, (Map));
-        assert(!previous_map.spawn, 'Map must not be spawned');
+        let mut map = get!(ctx.world, game.game_id, (Map));
+        assert(!map.spawn, 'Map must not be spawned');
 
         // [Command] Map entity
-        let map = MapTrait::new(game.game_id, previous_map.level);
+        map.spawn = true;
         set!(ctx.world, (map));
 
         // [Command] Characters and Tiles
