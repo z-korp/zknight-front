@@ -7,7 +7,7 @@ const modalStyle = {
     top: '50%', // centré verticalement
     left: '50%', // centré horizontalement
     width: '80%', // Reduit la largeur
-    height: '60%', // Reduit la hauteur
+    height: '40%', // Reduit la hauteur
     right: 'auto',
     bottom: 'auto',
     marginRight: '-50%',
@@ -33,14 +33,19 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ score, isOpen, onClose })
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onClose} style={modalStyle} ariaHideApp={false}>
-      <div className="modal">
-        <div className="modal-content">
-          <h2 className="text-black">Game Over</h2>
-          <hr></hr>
+      <div className="relative">
+        <button onClick={onClose} className="absolute top-[-10px] right-0 p-2">
+          <div className="relative w-6 h-6">
+            <div className="absolute inset-0 w-1 h-full bg-black transform rotate-45 origin-center"></div>
+            <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
+          </div>
+        </button>
+
+        <h2 className="text-black text-center mb-4">Game Over</h2>
+        <hr className="my-4 border-2" />
+        <div className="flex flex-col items-center justify-between mt-20">
           <h3 className="text-black">Score: {score}</h3>
-          <button className="text-black" onClick={onClose}>
-            Close
-          </button>
+          <h3 className="text-black mt-10">Click on 'new game' on the main screen to start over!</h3>
         </div>
       </div>
     </Modal>

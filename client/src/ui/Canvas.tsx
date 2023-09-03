@@ -219,7 +219,7 @@ const Canvas = () => {
                   })
                 }
               />
-              <Text
+              {/* <Text
                 text={`(${hoveredTile.x}, ${hoveredTile.y})`}
                 x={20}
                 y={100}
@@ -247,7 +247,7 @@ const Canvas = () => {
                     fill: '#ffffff',
                   })
                 }
-              />
+              /> */}
             </>
           )}
           {map.size !== 0 &&
