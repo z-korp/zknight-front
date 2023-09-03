@@ -13,6 +13,7 @@ import { useElementStore } from '../utils/store';
 import GameOverModal from './GameOverModal'; // importez le composant
 import Map from './Map';
 import Mob, { MobType } from './Mob';
+import PassTurnButton from './PassTurnButton';
 
 const Canvas = () => {
   const {
@@ -50,7 +51,7 @@ const Canvas = () => {
   }, [game.score]);
 
   const { getActionableTiles } = useGrid(grid);
-
+  const passTurn = () => {};
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
@@ -292,6 +293,8 @@ const Canvas = () => {
             })}
         </Container>
       </Stage>
+      {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
+
       <GameOverModal score={score} isOpen={isGameOver} onClose={() => setIsGameOver(false)} />
     </div>
   );
