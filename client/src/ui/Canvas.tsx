@@ -21,9 +21,10 @@ const Canvas = () => {
     account: { account },
   } = useDojo();
 
-  const mobs = useComponentStates();
-  const { knight, barbarian, wizard, bowman } = mobs;
+  const contractState = useComponentStates();
+  const { knight, barbarian, wizard, bowman, game } = contractState;
 
+  const [score, setScore] = useState<number>(0);
   const [grid, setGrid] = useState<GridElement[][]>([]);
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [selectedTile, setSelectedTile] = useState<Coordinate | undefined>(undefined);
@@ -35,6 +36,10 @@ const Canvas = () => {
   useEffect(() => {
     setGrid(generateGrid(map));
   }, [map]);
+
+  useEffect(() => {
+    if (game.score) setScore(game.score);
+  }, [game.score]);
 
   const { getActionableTiles } = useGrid(grid);
 
@@ -145,7 +150,7 @@ const Canvas = () => {
         {map.size !== 0 && hoveredTile && absolutePosition && (
           <>
             <Text
-              text={`SCORE: ${120}`}
+              text={`SCORE: ${score}`}
               x={20}
               y={50}
               style={
@@ -190,9 +195,9 @@ const Canvas = () => {
           </>
         )}
         {map.size !== 0 &&
-          Object.keys(mobs).map((m: string, j) => {
+          Object.keys(contractState).map((m: string, j) => {
             const mtype = m as MobType;
-            const health = mobs[mtype].health;
+            const health = contractState[mtype].health;
             if (m === 'game' || m === 'map') return null;
             return (
               <>
