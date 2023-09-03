@@ -5,12 +5,45 @@ query getEntities {
         keys
         components {
           __typename
-          ... on Moves {
-            remaining
+          ... on Game {
+            game_id
+            score
+            over
+            seed
           }
-          ... on Position {
+          ... on Map {
+            level
+            size
+            spawn
+          }
+          ... on Character {
+            health
+            index
+            hitter
+            hit
+          }
+          ... on Tile {
+            _type
             x
             y
+          }
+        }
+      }
+    }
+  }
+}
+
+query getFinishedGames {
+  entities(keys: ["%"]) {
+    edges {
+      node {
+        keys
+        components {
+          __typename
+          ... on Game {
+            game_id
+            score
+            over
           }
         }
       }

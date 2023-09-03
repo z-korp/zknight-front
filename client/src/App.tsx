@@ -89,6 +89,42 @@ function App() {
     fetchData();
   }, [account.address]);
 
+  const [games, setGames] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await graphSdk.getFinishedGames();
+
+        if (data && data.entities && data.entities.edges) {
+          const gameComponentsWithKeys: any[] = [];
+
+          data.entities.edges.forEach((edge) => {
+            if (edge && edge.node && edge.node.components) {
+              edge.node.components.forEach((component) => {
+                if (component && component.__typename === 'Game') {
+                  if (edge?.node?.keys && edge?.node?.keys[0]) {
+                    gameComponentsWithKeys.push({
+                      id: component.game_id,
+                      score: component.score,
+                      player: edge?.node?.keys[0],
+                    });
+                  }
+                }
+              });
+            }
+          });
+
+          setGames(gameComponentsWithKeys);
+        }
+      } catch (error) {
+        console.error('Error fetching games:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen w-full">
       <div className="flex justify-between space p-2 mt-2">
