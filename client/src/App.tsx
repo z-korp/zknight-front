@@ -19,6 +19,11 @@ function App() {
 
   Modal.setAppElement('#root');
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isLeaderBoardModalOpen, setLeaderBoardModalOpen] = useState(false);
+
+  const toggleLeaderBoardModal = () => {
+    setLeaderBoardModalOpen(!isLeaderBoardModalOpen);
+  };
 
   const toggleModal = () => {
     setModalOpen(!isModalOpen);
@@ -87,7 +92,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen w-full">
       <div className="flex justify-between space p-2 mt-2">
-        <LeaderBoardButton onClick={credits}></LeaderBoardButton>
+        <LeaderBoardButton onClick={toggleLeaderBoardModal}></LeaderBoardButton>
         <div className="flex justify-center items-center text-8xl text">zKnight</div>
         <CreditsButton onClick={credits}></CreditsButton>
       </div>
@@ -147,6 +152,25 @@ function App() {
                 </a>
               </p>
             </div>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isLeaderBoardModalOpen}
+        onRequestClose={toggleLeaderBoardModal}
+        style={modalStyle}
+        ariaHideApp={false}
+      >
+        <div className="relative">
+          <button onClick={toggleLeaderBoardModal} className="absolute top-[-10px] right-0 p-2">
+            {/* ... */}
+          </button>
+          <h1 className="text-black mb-4 text-center">Leaderboard</h1>
+          <hr className="my-4 border-2" />
+
+          <div className="flex flex-col items-center justify-between">
+            {/* Votre logique pour afficher les données du classement ici */}
           </div>
         </div>
       </Modal>
