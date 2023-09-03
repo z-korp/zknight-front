@@ -11,6 +11,8 @@ export function defineContractComponents(world: World) {
         {
           health: RecsType.Number,
           index: RecsType.Number,
+          hitter: RecsType.Number, // type of the last mob that hit the Character
+          hit: RecsType.Number, // damage from the hitter
         },
         {
           metadata: {
@@ -26,6 +28,8 @@ export function defineContractComponents(world: World) {
         {
           game_id: RecsType.Number,
           score: RecsType.Number,
+          over: RecsType.Boolean,
+          seed: RecsType.Number,
         },
         {
           metadata: {
@@ -39,8 +43,9 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          map_id: RecsType.Number,
+          level: RecsType.Number,
           size: RecsType.Number,
+          spawn: RecsType.Boolean, // true: map is playing, false: the player has finished its level, should call spawn
         },
         {
           metadata: {

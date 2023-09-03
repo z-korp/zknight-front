@@ -17,6 +17,7 @@ interface MobProps {
   isSelected: boolean;
   getActionableTiles: (type: MobType) => ActionableTile[];
   health: number;
+  isHitter: boolean;
 }
 
 enum Animation {
@@ -134,6 +135,7 @@ const Mob: React.FC<MobProps> = ({
   isSelected,
   getActionableTiles,
   health,
+  isHitter,
 }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [counterAnim, setCounterAnim] = useState(0);
@@ -174,6 +176,22 @@ const Mob: React.FC<MobProps> = ({
       setAnimation(Animation.Hurt);
     }
   }, [health]);
+
+  const [isAttacking, setIsAttacking] = useState(false);
+  useEffect(() => {
+    if (isHitter === true) {
+      setIsAttacking(true);
+    }
+  }, [isHitter]);
+
+  useEffect(() => {
+    if (isAttacking === true) {
+      setCurrentFrame(0);
+      if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);
+      else if (type === 'bowman') setAnimation(Animation.BowAttack);
+      else if (type === 'wizard') setAnimation(Animation.StaffAttack);
+    }
+  }, [isAttacking, type]);
 
   // current position absolute during movement
   // will be changing during the movement, towards the absoluteTargetPosition

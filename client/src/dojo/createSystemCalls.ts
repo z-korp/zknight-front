@@ -147,15 +147,17 @@ export async function setComponentFromEvent(
 
   if (componentName === 'Map') {
     const [game_id] = keys;
-    const [map_id, size] = values;
-    console.log(`[Map: KEYS: (game_id: ${game_id}) - VALUES: (map_id: ${map_id}, size: ${size})]`);
+    const [level, size, spawn] = values;
+    console.log(`[Map: KEYS: (game_id: ${game_id}) - VALUES: (level: ${level}, size: ${size}, spawn: ${spawn})]`);
     set_size(Number(values[1]));
     Map_size = Number(values[1]);
   } else if (componentName === 'Game') {
     const [player_id] = keys;
-    const [game_id, score] = values;
+    const [game_id, score, over, seed] = values;
     console.log(
-      `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(score)})]`
+      `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(
+        score
+      )}, score: ${Boolean(over)}, seed: ${Number(seed)})]`
     );
   } else if (componentName === 'Tile') {
     const [game_id, map_id, index] = keys;
@@ -171,11 +173,11 @@ export async function setComponentFromEvent(
     }
   } else if (componentName === 'Character') {
     const [game_id, _type] = keys;
-    const [health, index] = values;
+    const [health, index, hitter, hit] = values;
     console.log(
       `[Character: KEYS: (game_id: ${game_id}, _type: ${_type}) - VALUES: (health: ${Number(health)}, index: ${Number(
         index
-      )})]`
+      )}, hitter: ${Number(hitter)}, hit: ${Number(hit)})]`
     );
   } else {
     console.log('eventData', eventData);

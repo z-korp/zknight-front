@@ -16,10 +16,28 @@ export enum TileType {
 interface Mob {
   health?: number;
   position?: Coordinate;
+  hitter?: number;
+  hit?: number;
 }
 
-const createMob = (health?: number, mob_position?: Coordinate): Mob => {
-  return { health, position: mob_position };
+const mobFromIndex = ['ground', 'water', 'Knight', 'Barbarian', 'Bowman', 'Wizard'];
+
+const createMob = (type: string, health?: number, mob_position?: Coordinate, hitter?: number, hit?: number): Mob => {
+  //console.log(type, health, mob_position?.x, mob_position?.y, 'hitter', mobFromIndex[hitter ? hitter : 0], hit);
+  return { health, position: mob_position, hitter, hit };
+};
+
+const getHitter = (
+  knight: Mob | undefined,
+  barbarian: Mob | undefined,
+  wizard: Mob | undefined,
+  bowman: Mob | undefined
+): number => {
+  if (knight && knight.hitter && knight.hitter !== 0) return knight.hitter;
+  else if (barbarian && barbarian.hitter && barbarian.hitter !== 0) return barbarian.hitter;
+  else if (wizard && wizard.hitter && wizard.hitter !== 0) return wizard.hitter;
+  else if (bowman && bowman.hitter && bowman.hitter !== 0) return bowman.hitter;
+  return 0;
 };
 
 export const useComponentStates = () => {
@@ -48,10 +66,10 @@ export const useComponentStates = () => {
   );
 
   let entityId3 = 0 as EntityIndex;
-  if (game && game.game_id !== undefined && map && map.map_id !== undefined && knight && knight.index !== undefined)
+  if (game && game.game_id !== undefined && map && map.level !== undefined && knight && knight.index !== undefined)
     entityId3 = getEntityIdFromKeys([
       game?.game_id ? BigInt(game?.game_id) : BigInt(0),
-      BigInt(map?.map_id),
+      BigInt(map?.level),
       BigInt(knight?.index),
     ]);
   const knight_position = useComponentValue(Tile, entityId3);
@@ -68,13 +86,13 @@ export const useComponentStates = () => {
     game &&
     game.game_id !== undefined &&
     map &&
-    map.map_id !== undefined &&
+    map.level !== undefined &&
     barbarian &&
     barbarian.index !== undefined
   )
     entityId4 = getEntityIdFromKeys([
       game?.game_id ? BigInt(game?.game_id) : BigInt(0),
-      BigInt(map?.map_id),
+      BigInt(map?.level),
       BigInt(barbarian?.index),
     ]);
   const barbarian_position = useComponentValue(Tile, entityId4);
@@ -87,10 +105,10 @@ export const useComponentStates = () => {
   );
 
   let entityId5 = 0 as EntityIndex;
-  if (game && game.game_id !== undefined && map && map.map_id !== undefined && bowman && bowman.index !== undefined)
+  if (game && game.game_id !== undefined && map && map.level !== undefined && bowman && bowman.index !== undefined)
     entityId5 = getEntityIdFromKeys([
       game?.game_id ? BigInt(game?.game_id) : BigInt(0),
-      BigInt(map?.map_id),
+      BigInt(map?.level),
       BigInt(bowman?.index),
     ]);
   const bowman_position = useComponentValue(Tile, entityId5);
@@ -103,10 +121,10 @@ export const useComponentStates = () => {
   );
 
   let entityId6 = 0 as EntityIndex;
-  if (game && game.game_id !== undefined && map && map.map_id !== undefined && wizard && wizard.index !== undefined)
+  if (game && game.game_id !== undefined && map && map.level !== undefined && wizard && wizard.index !== undefined)
     entityId6 = getEntityIdFromKeys([
       game?.game_id ? BigInt(game?.game_id) : BigInt(0),
-      BigInt(map?.map_id),
+      BigInt(map?.level),
       BigInt(wizard?.index),
     ]);
   const wizard_position = useComponentValue(Tile, entityId6);
@@ -116,12 +134,13 @@ export const useComponentStates = () => {
   //console.log(knight_position, barbarian_position, bowman_position, wizard_position);
 
   return {
-    game: { id: game?.game_id, score: game?.score },
-    map: { id: map?.map_id, size: map?.size },
-    knight: createMob(knight?.health, knight_position),
-    barbarian: createMob(barbarian?.health, barbarian_position),
-    bowman: createMob(bowman?.health, bowman_position),
-    wizard: createMob(wizard?.health, wizard_position),
+    game: { id: game?.game_id, score: game?.score, over: game?.over, seed: game?.seed },
+    map: { level: map?.level, size: map?.size, spawn: map?.spawn },
+    knight: createMob('knight', knight?.health, knight_position, knight?.hitter, knight?.hit),
+    barbarian: createMob('barbarian', barbarian?.health, barbarian_position, barbarian?.hitter, barbarian?.hit),
+    bowman: createMob('bowman', bowman?.health, bowman_position, bowman?.hitter, bowman?.hit),
+    wizard: createMob('wizard', wizard?.health, wizard_position, wizard?.hitter, wizard?.hit),
+    hitter: getHitter(knight, barbarian, wizard, bowman),
     //moveWizard: (x: number, y: number) => setPost({ x, y }),
   };
 };

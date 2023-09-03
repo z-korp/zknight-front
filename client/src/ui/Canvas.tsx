@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDojo } from '../DojoContext';
 import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
-import { useComponentStates } from '../hooks/useComponentStates';
+import { TileType, useComponentStates } from '../hooks/useComponentStates';
 import { useGrid } from '../hooks/useGrid';
 import { Coordinate, GridElement } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, generateGrid, to_grid_coordinate } from '../utils/grid';
@@ -22,7 +22,7 @@ const Canvas = () => {
   } = useDojo();
 
   const mobs = useComponentStates();
-  const { knight, barbarian, wizard, bowman } = mobs;
+  const { knight, barbarian, wizard, bowman, hitter } = mobs;
 
   const [grid, setGrid] = useState<GridElement[][]>([]);
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
@@ -102,6 +102,7 @@ const Canvas = () => {
             isSelected={selectedMob !== undefined && selectedMob === 'knight'}
             getActionableTiles={getActionableTiles}
             health={knight.health}
+            isHitter={hitter === TileType.Knight}
           />
         )}
 
@@ -115,6 +116,7 @@ const Canvas = () => {
             isSelected={selectedMob !== undefined && selectedMob === 'barbarian'}
             getActionableTiles={getActionableTiles}
             health={barbarian.health}
+            isHitter={hitter === TileType.Barbarian}
           />
         )}
         {bowman.position && bowman.health !== undefined && (
@@ -127,6 +129,7 @@ const Canvas = () => {
             isSelected={selectedMob !== undefined && selectedMob === 'bowman'}
             getActionableTiles={getActionableTiles}
             health={bowman.health}
+            isHitter={hitter === TileType.Bowman}
           />
         )}
         {wizard.position && wizard.health !== undefined && (
@@ -139,6 +142,7 @@ const Canvas = () => {
             isSelected={selectedMob !== undefined && selectedMob === 'wizard'}
             getActionableTiles={getActionableTiles}
             health={wizard.health}
+            isHitter={hitter === TileType.Wizard}
           />
         )}
 
