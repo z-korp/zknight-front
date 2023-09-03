@@ -18,7 +18,8 @@ export function createSystemCalls(
     signer: Account,
     seed: number,
     add_hole: (x: number, y: number) => void,
-    set_size: (size: number) => void
+    set_size: (size: number) => void,
+    reset_holes: () => void
   ) => {
     try {
       const tx = await execute(signer, 'Create', [seed]);
@@ -32,7 +33,7 @@ export function createSystemCalls(
 
       console.log(events);
       if (events) {
-        setComponentsFromEvents(contractComponents, events, add_hole, set_size);
+        setComponentsFromEvents(contractComponents, events, add_hole, set_size, reset_holes);
         console.log(receipt);
       }
     } catch (e) {
@@ -47,7 +48,8 @@ export function createSystemCalls(
     x: number,
     y: number,
     add_hole: (x: number, y: number) => void,
-    set_size: (size: number) => void
+    set_size: (size: number) => void,
+    reset_holes: () => void
   ) => {
     try {
       const tx = await execute(signer, 'Play', [x, y]);
@@ -61,14 +63,42 @@ export function createSystemCalls(
 
       let game_id = 0;
       if (events) {
-        game_id = await setComponentsFromEvents(contractComponents, events, add_hole, set_size);
+        game_id = await setComponentsFromEvents(contractComponents, events, add_hole, set_size, reset_holes);
+        console.log(receipt);
+
+        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Wizard)]), { hitter: 0 });
+        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Barbarian)]), { hitter: 0 });
+        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Knight)]), { hitter: 0 });
+        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Bowman)]), { hitter: 0 });
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log('');
+    }
+  };
+
+  const spawn = async (
+    signer: Account,
+    add_hole: (x: number, y: number) => void,
+    set_size: (size: number) => void,
+    reset_holes: () => void
+  ) => {
+    try {
+      const tx = await execute(signer, 'Spawn', []);
+
+      console.log(tx);
+      const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
+        retryInterval: 100,
+      })) as InvokeTransactionReceiptResponse;
+
+      const events = receipt.events;
+
+      console.log(events);
+      if (events) {
+        setComponentsFromEvents(contractComponents, events, add_hole, set_size, reset_holes);
         console.log(receipt);
       }
-
-      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Wizard)]), { hitter: 0 });
-      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Barbarian)]), { hitter: 0 });
-      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Knight)]), { hitter: 0 });
-      updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Bowman)]), { hitter: 0 });
     } catch (e) {
       console.log(e);
     } finally {
@@ -79,6 +109,7 @@ export function createSystemCalls(
   return {
     create,
     play,
+    spawn,
   };
 }
 
@@ -86,14 +117,21 @@ export async function setComponentsFromEvents(
   components: Components,
   events: Event[],
   add_hole: (x: number, y: number) => void,
-  set_size: (size: number) => void
+  set_size: (size: number) => void,
+  reset_holes: () => void
 ) {
   let game_id = 0;
   for (const event of events) {
-    const { componentName: name, gameId } = setComponentFromEvent(components, event.data, add_hole, set_size);
+    const { componentName: name, gameId } = setComponentFromEvent(
+      components,
+      event.data,
+      add_hole,
+      set_size,
+      reset_holes
+    );
     game_id = gameId;
     if (Map_size !== undefined && Number_of_holes >= Map_size) {
-      if (name === 'Character') await sleep(800);
+      if (name === 'Character') await sleep(500);
     }
   }
   await sleep(1000);
@@ -104,7 +142,8 @@ export function setComponentFromEvent(
   components: Components,
   eventData: string[],
   add_hole: (x: number, y: number) => void,
-  set_size: (size: number) => void
+  set_size: (size: number) => void,
+  reset_holes: () => void
 ) {
   // retrieve the component name
 
@@ -145,6 +184,9 @@ export function setComponentFromEvent(
     console.log(`[Map: KEYS: (game_id: ${game_id}) - VALUES: (level: ${level}, size: ${size}, spawn: ${spawn})]`);
     set_size(Number(values[1]));
     Map_size = Number(values[1]);
+    if (Number(spawn) === 0) {
+      reset_holes();
+    }
   } else if (componentName === 'Game') {
     const [player_id] = keys;
     const [game_id, score, over, seed] = values;
@@ -152,7 +194,7 @@ export function setComponentFromEvent(
     console.log(
       `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(
         score
-      )}, score: ${Boolean(over)}, seed: ${Number(seed)})]`
+      )}, over: ${Boolean(Number(over))}, seed: ${Number(seed)})]`
     );
   } else if (componentName === 'Tile') {
     const [game_id, map_id, index] = keys;

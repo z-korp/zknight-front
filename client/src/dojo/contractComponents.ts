@@ -45,7 +45,7 @@ export function defineContractComponents(world: World) {
         {
           level: RecsType.Number,
           size: RecsType.Number,
-          spawn: RecsType.Boolean, // true: map is playing, false: the player has finished its level, should call spawn
+          spawn: RecsType.Number, // true: map is playing, false: the player has finished its level, should call spawn
         },
         {
           metadata: {

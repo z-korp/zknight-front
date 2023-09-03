@@ -16,9 +16,9 @@ mod Play {
 
     use debug::PrintTrait;
 
-    fn execute(ctx: Context, x: u32, y: u32) {
+    fn execute(ctx: Context, player: felt252, x: u32, y: u32) {
         // [Command] Game entity
-        let mut game = get!(ctx.world, ctx.origin, (Game));
+        let mut game = get!(ctx.world, player, (Game));
 
         // [Check] Game is not over
         assert(!game.over, 'Game is over');
@@ -165,7 +165,7 @@ mod Play {
         // [Effect] Bowman: Attack if possible, move otherwise
         let bowman: Foe = FoeTrait::new(bowman_char.health, bowman_char._type);
         if bowman.can_attack(bowman_tile, knight_tile) && knight_char.health > 0 {
-            // [Effect] Hit each character in the line of sight
+            // [Effect] Hit each character in the line of sight, but stop at first hit
             let hits = bowman.get_hits(bowman_tile, knight_tile, map.size);
             let len = hits.len();
             let mut i = 0;
@@ -184,6 +184,8 @@ mod Play {
                     char.hitter = bowman_char._type;
                     char.hit = damage;
                     set!(ctx.world, (char));
+                    // [Break] Hits stop at the first character
+                    break;
                 };
                 i += 1;
             };
@@ -256,7 +258,6 @@ mod Play {
             set!(ctx.world, (game));
         } else if barbarian_char.health == 0 && bowman_char.health == 0 && wizard_char.health == 0 {
             // [Command] Update Game
-            game.seed += 1;
             set!(ctx.world, (game));
             // [Command] Update Map
             map.level += 1;

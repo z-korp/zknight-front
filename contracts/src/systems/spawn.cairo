@@ -2,6 +2,7 @@
 mod Spawn {
     use array::{ArrayTrait, SpanTrait};
     use traits::Into;
+    use poseidon::poseidon_hash_span;
 
     use dojo::world::{Context, IWorld};
 
@@ -12,12 +13,12 @@ mod Spawn {
 
     use zknight::constants::{KNIGHT_HEALTH, MOB_HEALTH};
 
-    fn execute(ctx: Context) {
+    fn execute(ctx: Context, player: felt252) {
         // [Command] Game entity
-        let game = get!(ctx.world, ctx.origin, (Game));
+        let game = get!(ctx.world, player, (Game));
 
         // [Check] Map must not be spawned
-        let mut map = get!(ctx.world, ctx.origin, (Map));
+        let mut map = get!(ctx.world, game.game_id, (Map));
         assert(!map.spawn, 'Map must not be spawned');
 
         // [Command] Map entity
@@ -25,7 +26,8 @@ mod Spawn {
         set!(ctx.world, (map));
 
         // [Command] Characters and Tiles
-        let raw_types = map.generate(game.seed);
+        let seed = poseidon_hash_span(array![game.seed, map.level.into()].span()).into();
+        let raw_types = map.generate(seed);
         let mut index = 0;
         let length = raw_types.len();
         loop {

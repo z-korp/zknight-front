@@ -16,6 +16,7 @@ interface State {
   map: Map;
   add_hole: (x: number, y: number) => void;
   set_size: (size: number) => void;
+  reset_holes: () => void;
 }
 
 export const useElementStore = create<State>((set) => ({
@@ -24,6 +25,10 @@ export const useElementStore = create<State>((set) => ({
   add_hole: (x: number, y: number) =>
     set((state) => ({
       map: { size: state.map.size, holes: [...state.map.holes, { x, y }] },
+    })),
+  reset_holes: () =>
+    set((state) => ({
+      map: { size: state.map.size, holes: [] },
     })),
   set_size: (size: number) => set((state) => ({ map: { size, holes: state.map.holes } })),
 }));

@@ -57,6 +57,7 @@ export const useComponentStates = () => {
 
   const entityId2 = game?.game_id as EntityIndex;
   const map = useComponentValue(Map, entityId2);
+  //console.log('map', map);
 
   // ===================================================================================================================
   // KNIGHT
