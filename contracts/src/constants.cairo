@@ -1,6 +1,6 @@
 const SIZE: u32 = 8;
 const SEED : felt252 = 10000;
-const KNIGHT_HEALTH: u8 = 5;
+const KNIGHT_HEALTH: u8 = 10;
 const MOB_HEALTH: u8 = 1;
 
 const GROUND_TYPE: u8 = 0;

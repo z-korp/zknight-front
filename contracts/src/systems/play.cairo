@@ -256,7 +256,6 @@ mod Play {
             set!(ctx.world, (game));
         } else if barbarian_char.health == 0 && bowman_char.health == 0 && wizard_char.health == 0 {
             // [Command] Update Game
-            game.seed += 1;
             set!(ctx.world, (game));
             // [Command] Update Map
             map.level += 1;

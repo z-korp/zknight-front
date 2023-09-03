@@ -2,6 +2,7 @@
 mod Spawn {
     use array::{ArrayTrait, SpanTrait};
     use traits::Into;
+    use poseidon::poseidon_hash_span;
 
     use dojo::world::{Context, IWorld};
 
@@ -25,7 +26,8 @@ mod Spawn {
         set!(ctx.world, (map));
 
         // [Command] Characters and Tiles
-        let raw_types = map.generate(game.seed);
+        let seed = poseidon_hash_span(array![game.seed, map.level.into()].span()).into();
+        let raw_types = map.generate(seed);
         let mut index = 0;
         let length = raw_types.len();
         loop {
