@@ -1,6 +1,7 @@
 import { Container, Sprite, Stage, Text } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import { useEffect, useState } from 'react';
+import { shortString } from 'starknet';
 import { useDojo } from '../DojoContext';
 import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
@@ -13,12 +14,13 @@ import { useElementStore } from '../utils/store';
 import GameOverModal from './GameOverModal'; // importez le composant
 import Map from './Map';
 import Mob, { MobType } from './Mob';
+import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
 
 const Canvas = () => {
   const {
     setup: {
-      systemCalls: { play, spawn },
+      systemCalls: { play, spawn, create },
     },
     account: { account },
   } = useDojo();
@@ -35,6 +37,22 @@ const Canvas = () => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
+  const [pseudo, setPseudo] = useState('');
+  const [ip, setIp] = useState('');
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then((response) => response.json())
+      .then((data) => setIp(data.ip));
+  }, []);
+
+  const generateNewGame = async () => {
+    reset_holes();
+
+    const ipNumber = Number(ip.replace('.', ''));
+    const pseudoFelt = shortString.encodeShortString(pseudo);
+    create(account, ipNumber, 10, pseudoFelt, add_hole, set_size, reset_holes);
+  };
+
   useEffect(() => {
     if (knight.health === 0) {
       setIsGameOver(true);
@@ -44,7 +62,6 @@ const Canvas = () => {
   const { map, add_hole, set_size, reset_holes } = useElementStore((state) => state);
 
   useEffect(() => {
-    console.log('map changed, generateGrid');
     setGrid(generateGrid(map));
   }, [map]);
 
@@ -57,10 +74,9 @@ const Canvas = () => {
   }, [mapState]);
 
   useEffect(() => {
-    console.log('mapState', mapState);
     if (mapState.spawn === 0) {
-      console.log('spawnnnnn');
-      spawn(account, add_hole, set_size, reset_holes);
+      const ipNumber = Number(ip.replace('.', ''));
+      spawn(account, ipNumber, add_hole, set_size, reset_holes);
     }
   }, [mapState.spawn]);
 
@@ -68,14 +84,16 @@ const Canvas = () => {
 
   const passTurn = () => {
     // pass turn is a play but with same position
-    if (knight.position) play(account, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
+    const ipNumber = Number(ip.replace('.', ''));
+    if (knight.position)
+      play(account, ipNumber, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Stage
         width={WIDTH}
         height={HEIGHT}
@@ -121,7 +139,8 @@ const Canvas = () => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              play(account, tileX, tileY, add_hole, set_size, reset_holes);
+              const ipNumber = Number(ip.replace('.', ''));
+              play(account, ipNumber, tileX, tileY, add_hole, set_size, reset_holes);
             }
           }
         }}
@@ -217,7 +236,23 @@ const Canvas = () => {
                   })
                 }
               />
+
               <Text
+                text={`IP: ${ip}`}
+                x={20}
+                y={120}
+                style={
+                  new PIXI.TextStyle({
+                    align: 'center',
+                    fontFamily: '"Press Start 2P", Helvetica, sans-serif',
+                    fontSize: 20,
+                    fontWeight: '400',
+                    fill: '#ffffff',
+                  })
+                }
+              />
+
+              {/*<Text
                 text={`(${hoveredTile.x}, ${hoveredTile.y})`}
                 x={20}
                 y={100}
@@ -245,7 +280,7 @@ const Canvas = () => {
                     fill: '#ffffff',
                   })
                 }
-              />
+              />*/}
             </>
           )}
           {map.size !== 0 &&
@@ -291,6 +326,7 @@ const Canvas = () => {
         </Container>
       </Stage>
       {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
+      {map.size === 0 && <NewGame onClick={generateNewGame} onPseudoChange={setPseudo} />}
 
       <GameOverModal score={score} isOpen={isGameOver} onClose={() => setIsGameOver(false)} />
     </div>

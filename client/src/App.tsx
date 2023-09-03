@@ -5,14 +5,28 @@ import twitterPixelIcon from './assets/twitter_pixel_icon.png'; // Ajustez le ch
 import Canvas from './ui/Canvas';
 import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
-import NewGameButton from './ui/NewGameButton';
-import { useElementStore } from './utils/store';
+
+const games = [
+  { id: 1, score: 100, player: '0x123' },
+  { id: 2, score: 90, player: '0x124' },
+  { id: 3, score: 95, player: '0x125' },
+  { id: 4, score: 110, player: '0x123' },
+  { id: 5, score: 120, player: '0x126' },
+  { id: 6, score: 85, player: '0x124' },
+  { id: 7, score: 105, player: '0x127' },
+  { id: 8, score: 80, player: '0x128' },
+  { id: 9, score: 110, player: '0x129' },
+  { id: 10, score: 70, player: '0x130' },
+  { id: 11, score: 100, player: '0x131' },
+  { id: 12, score: 60, player: '0x132' },
+  { id: 13, score: 85, player: '0x133' },
+  { id: 14, score: 75, player: '0x134' },
+];
 
 function App() {
   const {
     setup: {
       network: { graphSdk },
-      systemCalls: { create, play },
     },
     account: { account },
   } = useDojo();
@@ -48,26 +62,12 @@ function App() {
     },
   };
 
-  const { add_hole, set_size, reset_holes } = useElementStore((state) => state);
-
   // entity id - this example uses the account address as the entity id
   const entityId = account.address;
 
   // get current component values
   //const position = useComponentValue(Position, parseInt(entityId.toString()) as EntityIndex);
   //const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
-
-  const generateNewGame = async () => {
-    // Logique pour générer un nouveau jeu
-    // Par exemple, réinitialiser les composants Position et Moves
-    //setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: 0, y: 0 });
-    //setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, { remaining: 100 });
-    // Si vous avez besoin de faire des appels réseau
-    // await call('someNetworkFunction', { someParam: 'someValue' });
-    // Autres initialisations
-    // ...
-    create(account, 10000, add_hole, set_size, reset_holes);
-  };
 
   const credits = async () => {
     toggleModal();
@@ -90,23 +90,6 @@ function App() {
   }, [account.address]);
 
   // const [games, setGames] = useState<any[]>([]);
-
-  const games = [
-    { id: 1, score: 100, player: '0x123' },
-    { id: 2, score: 90, player: '0x124' },
-    { id: 3, score: 95, player: '0x125' },
-    { id: 4, score: 110, player: '0x123' },
-    { id: 5, score: 120, player: '0x126' },
-    { id: 6, score: 85, player: '0x124' },
-    { id: 7, score: 105, player: '0x127' },
-    { id: 8, score: 80, player: '0x128' },
-    { id: 9, score: 110, player: '0x129' },
-    { id: 10, score: 70, player: '0x130' },
-    { id: 11, score: 100, player: '0x131' },
-    { id: 12, score: 60, player: '0x132' },
-    { id: 13, score: 85, player: '0x133' },
-    { id: 14, score: 75, player: '0x134' },
-  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,7 +142,6 @@ function App() {
 
       <div className="flex-grow mx-auto mt-2">
         <Canvas />
-        <NewGameButton onClick={generateNewGame}></NewGameButton>
       </div>
 
       <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={modalStyle} ariaHideApp={false}>

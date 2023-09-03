@@ -30,6 +30,7 @@ export function defineContractComponents(world: World) {
           score: RecsType.Number,
           over: RecsType.Boolean,
           seed: RecsType.Number,
+          name: RecsType.String,
         },
         {
           metadata: {
