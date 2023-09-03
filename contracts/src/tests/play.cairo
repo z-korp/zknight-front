@@ -32,13 +32,13 @@ mod Tests {
         // [Assert] Game
         let game = get!(world, PLAYER, (Game));
         assert(game.game_id == 0, 'Wrong game id');
-        assert(game.score == 0, 'Wrong score');
         assert(game.seed == SEED, 'Wrong seed');
-        assert(game.name == NAME, 'Wrong name');
 
         // [Assert] Map
         let map = get!(world, game.game_id, (Map));
         assert(map.level == 1, 'Wrong map id');
+        assert(map.score == 0, 'Wrong score');
+        assert(map.name == NAME, 'Wrong name');
 
         // [Assert] Knight Character
         let knight_char = get!(world, (game.game_id, KNIGHT_TYPE).into(), (Character));
@@ -99,8 +99,8 @@ mod Tests {
         assert(bowman_tile.y == 2, 'Wrong bowman y');
 
         // [Assert] Game
-        let game = get!(world, PLAYER, (Game));
-        assert(game.score == 9, 'Wrong score');
+        let map = get!(world, game.game_id, (Map));
+        assert(map.score == 9, 'Wrong score');
     }
 
     #[test]
@@ -173,7 +173,6 @@ mod Tests {
         // [Assert] Game
         let game = get!(world, PLAYER, (Game));
         assert(game.game_id == 0, 'Wrong game id');
-        assert(game.score == 19, 'Wrong score');
         assert(game.over == false, 'Wrong over status');
 
         // [Assert] Barbarian Character
@@ -184,6 +183,7 @@ mod Tests {
         let map = get!(world, game.game_id, (Map));
         assert(map.level == 2, 'Wrong map id');
         assert(map.spawn == false, 'Wrong spawn');
+        assert(map.score == 19, 'Wrong score');
 
         // [Spawn]
         world.execute('Spawn', array![PLAYER]);

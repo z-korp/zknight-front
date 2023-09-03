@@ -15,11 +15,11 @@ mod Create {
     fn execute(ctx: Context, player: felt252, seed: felt252, name: felt252) {
         // [Command] Game entity
         let game_id = ctx.world.uuid();
-        let mut game = GameTrait::new(player, game_id, seed, name);
+        let mut game = GameTrait::new(player, game_id, seed);
         set!(ctx.world, (game));
 
         // [Command] Map entity
-        let map = MapTrait::new(game_id, 1);
+        let map = MapTrait::new(game_id, 1, name);
         set!(ctx.world, (map));
 
         // [Command] Characters and Tiles
