@@ -92,7 +92,7 @@ const Canvas = () => {
       <Container sortableChildren={true}>
         <Map hoveredTile={hoveredTile} />
 
-        {knight.position && knight.health && (
+        {knight.position && knight.health !== undefined && (
           <Mob
             type="knight"
             grid={grid}
@@ -105,7 +105,7 @@ const Canvas = () => {
           />
         )}
 
-        {barbarian.position && barbarian.health && (
+        {barbarian.position && barbarian.health !== undefined && (
           <Mob
             type="barbarian"
             grid={grid}
@@ -117,7 +117,7 @@ const Canvas = () => {
             health={barbarian.health}
           />
         )}
-        {bowman.position && bowman.health && (
+        {bowman.position && bowman.health !== undefined && (
           <Mob
             type="bowman"
             grid={grid}
@@ -129,7 +129,7 @@ const Canvas = () => {
             health={bowman.health}
           />
         )}
-        {wizard.position && wizard.health && (
+        {wizard.position && wizard.health !== undefined && (
           <Mob
             type="wizard"
             grid={grid}
@@ -195,7 +195,7 @@ const Canvas = () => {
             const health = mobs[mtype].health;
             if (m === 'game' || m === 'map') return null;
             return (
-              <Container>
+              <>
                 {health !== undefined && health > 0 ? (
                   Array.from({ length: health as number }).map((_, i) => {
                     return (
@@ -226,7 +226,7 @@ const Canvas = () => {
                     })
                   }
                 />
-              </Container>
+              </>
             );
           })}
       </Container>
