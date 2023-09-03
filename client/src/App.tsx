@@ -7,6 +7,10 @@ import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
 import NewGameButton from './ui/NewGameButton';
 import { useElementStore } from './utils/store';
+import { sound } from '@pixi/sound';
+import 'font-awesome/css/font-awesome.min.css';
+
+// import * as PIXI from 'pixi.js';
 
 function App() {
   const {
@@ -20,6 +24,19 @@ function App() {
   Modal.setAppElement('#root');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLeaderBoardModalOpen, setLeaderBoardModalOpen] = useState(false);
+  const [isMusicPlaying, setMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    if (isMusicPlaying) {
+      sound.play('my-sound');
+    } else {
+      sound.stopAll();
+    }
+  }, [isMusicPlaying]);
+
+  const toggleMusic = () => {
+    setMusicPlaying(!isMusicPlaying);
+  };
 
   const toggleLeaderBoardModal = () => {
     setLeaderBoardModalOpen(!isLeaderBoardModalOpen);
@@ -58,6 +75,7 @@ function App() {
   //const moves = useComponentValue(Moves, parseInt(entityId.toString()) as EntityIndex);
 
   const generateNewGame = async () => {
+    setMusicPlaying(true);
     // Logique pour générer un nouveau jeu
     // Par exemple, réinitialiser les composants Position et Moves
     //setComponent(Position, parseInt(entityId.toString()) as EntityIndex, { x: 0, y: 0 });
@@ -109,6 +127,7 @@ function App() {
   ];
 
   useEffect(() => {
+    sound.add('my-sound', './assets/music.mp3');
     const fetchData = async () => {
       try {
         const { data } = await graphSdk.getFinishedGames();
@@ -155,6 +174,9 @@ function App() {
         <LeaderBoardButton onClick={toggleLeaderBoardModal}></LeaderBoardButton>
         <div className="flex justify-center items-center text-8xl text">zKnight</div>
         <CreditsButton onClick={credits}></CreditsButton>
+        <button onClick={toggleMusic} className="p-2 text-2xl mr-10 mb-2 w-6">
+          {isMusicPlaying ? <i className="fa fa-volume-up"></i> : <i className="fa fa-volume-off"></i>}
+        </button>
       </div>
 
       <div className="flex-grow mx-auto mt-2">
@@ -215,6 +237,11 @@ function App() {
                 <li>
                   <a href="https://pixijs.io/" target="_blank" rel="noopener noreferrer" className="text-black">
                     Pixijs
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.zapsplat.com/" target="_blank" rel="noopener noreferrer" className="text-black">
+                    Sound from Zapsplat.com
                   </a>
                 </li>
               </ul>

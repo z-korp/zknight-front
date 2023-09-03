@@ -18,8 +18,10 @@
     "@latticexyz/utils": "^1.43.0",
     "@pixi/react": "^7.1.0",
     "@pixi/react-animated": "^7.1.1",
+    "@pixi/sound": "^5.2.1",
     "autoprefixer": "^10.4.15",
     "ethers": "^5.7.2",
+    "font-awesome": "^4.7.0",
     "graphql": "^16.7.1",
     "graphql-request": "^6.1.0",
     "micro-starknet": "^0.2.3",
@@ -31,8 +33,8 @@
     "react-modal": "^3.16.1",
     "rxjs": "^7.8.1",
     "starknet": "^5.14.1",
-    "zustand": "^4.4.1",
-    "tailwindcss": "^3.3.3"
+    "tailwindcss": "^3.3.3",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
