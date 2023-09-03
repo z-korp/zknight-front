@@ -16,8 +16,13 @@ import Map from './Map';
 import Mob, { MobType } from './Mob';
 import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
+import ResetButton from './ResetButton';
 
-const Canvas = () => {
+interface CanvasProps {
+  setMusicPlaying: (bool: boolean) => void;
+}
+
+const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const {
     setup: {
       systemCalls: { play, spawn, create },
@@ -53,10 +58,12 @@ const Canvas = () => {
   }, []);
 
   const generateNewGame = async () => {
+    setMusicPlaying(true);
+
     reset_holes();
 
     const pseudoFelt = shortString.encodeShortString(pseudo);
-    create(account, ip, 10, pseudoFelt, add_hole, set_size, reset_holes);
+    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes);
   };
 
   useEffect(() => {
@@ -237,21 +244,6 @@ const Canvas = () => {
                 }
               />
 
-              <Text
-                text={`IP: ${ip}`}
-                x={20}
-                y={120}
-                style={
-                  new PIXI.TextStyle({
-                    align: 'center',
-                    fontFamily: '"Press Start 2P", Helvetica, sans-serif',
-                    fontSize: 20,
-                    fontWeight: '400',
-                    fill: '#ffffff',
-                  })
-                }
-              />
-
               {/*<Text
                 text={`(${hoveredTile.x}, ${hoveredTile.y})`}
                 x={20}
@@ -325,6 +317,7 @@ const Canvas = () => {
             })}
         </Container>
       </Stage>
+      {map.size !== 0 && <ResetButton onClick={generateNewGame}></ResetButton>}
       {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
       {map.size === 0 && <NewGame onClick={generateNewGame} onPseudoChange={setPseudo} />}
 

@@ -106,8 +106,6 @@ function App() {
     fetchData();
   }, [account.address]);
 
-  // const [games, setGames] = useState<any[]>([]);
-
   useEffect(() => {
     sound.add('my-sound', './assets/music.mp3');
     const fetchData = async () => {
@@ -152,17 +150,21 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen w-full">
-      <div className="flex justify-between space p-2 mt-2">
+      <div className="flex justify-between space p-2">
         <LeaderBoardButton onClick={toggleLeaderBoardModal}></LeaderBoardButton>
         <div className="flex justify-center items-center text-8xl text">zKnight</div>
         <CreditsButton onClick={credits}></CreditsButton>
-        <button onClick={toggleMusic} className="p-2 text-2xl mr-10 mb-2 w-6">
+        <button
+          onClick={toggleMusic}
+          className="p-2 mr-2 text-2xl w-6"
+          style={{ position: 'absolute', top: 5, right: 10 }}
+        >
           {isMusicPlaying ? <i className="fa fa-volume-up"></i> : <i className="fa fa-volume-off"></i>}
         </button>
       </div>
 
       <div className="flex-grow mx-auto mt-2">
-        <Canvas />
+        <Canvas setMusicPlaying={setMusicPlaying} />
       </div>
 
       <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={modalStyle} ariaHideApp={false}>
