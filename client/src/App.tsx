@@ -12,7 +12,7 @@ function App() {
   const {
     setup: {
       network: { graphSdk },
-      systemCalls: { create2, move },
+      systemCalls: { create, play },
     },
     account: { account },
   } = useDojo();
@@ -66,7 +66,7 @@ function App() {
     // await call('someNetworkFunction', { someParam: 'someValue' });
     // Autres initialisations
     // ...
-    create2(account, 1000, add_hole, set_size);
+    create(account, 1000, add_hole, set_size);
   };
 
   const credits = async () => {

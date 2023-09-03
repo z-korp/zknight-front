@@ -18,7 +18,7 @@ import PassTurnButton from './PassTurnButton';
 const Canvas = () => {
   const {
     setup: {
-      systemCalls: { move },
+      systemCalls: { play },
     },
     account: { account },
   } = useDojo();
@@ -51,7 +51,12 @@ const Canvas = () => {
   }, [game.score]);
 
   const { getActionableTiles } = useGrid(grid);
-  const passTurn = () => {};
+
+  const passTurn = () => {
+    // pass turn is a play but with same position
+    if (knight.position) play(account, knight.position?.x, knight.position?.y, add_hole, set_size);
+  };
+
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
@@ -102,7 +107,7 @@ const Canvas = () => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              move(account, tileX, tileY, add_hole, set_size);
+              play(account, tileX, tileY, add_hole, set_size);
             }
           }
         }}

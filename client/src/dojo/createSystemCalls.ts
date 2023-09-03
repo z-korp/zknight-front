@@ -14,7 +14,7 @@ export function createSystemCalls(
   { execute, contractComponents }: SetupNetworkResult,
   { Barbarian, Knight, Map, Position, Game }: ClientComponents
 ) {
-  const create2 = async (
+  const create = async (
     signer: Account,
     seed: number,
     add_hole: (x: number, y: number) => void,
@@ -42,7 +42,7 @@ export function createSystemCalls(
     }
   };
 
-  const move = async (
+  const play = async (
     signer: Account,
     x: number,
     y: number,
@@ -71,8 +71,8 @@ export function createSystemCalls(
   };
 
   return {
-    create2,
-    move,
+    create,
+    play,
   };
 }
 
