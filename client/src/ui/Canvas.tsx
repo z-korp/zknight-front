@@ -37,20 +37,26 @@ const Canvas = () => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
+  const { map, add_hole, set_size, reset_holes, set_ip } = useElementStore((state) => state);
+
   const [pseudo, setPseudo] = useState('');
-  const [ip, setIp] = useState('');
+  const [ip, setIp] = useState<number>(0);
   useEffect(() => {
     fetch('https://api.ipify.org?format=json')
       .then((response) => response.json())
-      .then((data) => setIp(data.ip));
+      .then((data) => {
+        const i = Number(data.ip.replaceAll('.', ''));
+        setIp(i);
+        set_ip(i);
+      })
+      .catch((e) => console.log('error while retrieving ip' + e));
   }, []);
 
   const generateNewGame = async () => {
     reset_holes();
 
-    const ipNumber = Number(ip.replace('.', ''));
     const pseudoFelt = shortString.encodeShortString(pseudo);
-    create(account, ipNumber, 10, pseudoFelt, add_hole, set_size, reset_holes);
+    create(account, ip, 10, pseudoFelt, add_hole, set_size, reset_holes);
   };
 
   useEffect(() => {
@@ -58,8 +64,6 @@ const Canvas = () => {
       setIsGameOver(true);
     }
   }, [knight.health]);
-
-  const { map, add_hole, set_size, reset_holes } = useElementStore((state) => state);
 
   useEffect(() => {
     setGrid(generateGrid(map));
@@ -75,8 +79,7 @@ const Canvas = () => {
 
   useEffect(() => {
     if (mapState.spawn === 0) {
-      const ipNumber = Number(ip.replace('.', ''));
-      spawn(account, ipNumber, add_hole, set_size, reset_holes);
+      spawn(account, ip, add_hole, set_size, reset_holes);
     }
   }, [mapState.spawn]);
 
@@ -84,9 +87,7 @@ const Canvas = () => {
 
   const passTurn = () => {
     // pass turn is a play but with same position
-    const ipNumber = Number(ip.replace('.', ''));
-    if (knight.position)
-      play(account, ipNumber, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
+    if (knight.position) play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
@@ -139,8 +140,7 @@ const Canvas = () => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              const ipNumber = Number(ip.replace('.', ''));
-              play(account, ipNumber, tileX, tileY, add_hole, set_size, reset_holes);
+              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes);
             }
           }
         }}
