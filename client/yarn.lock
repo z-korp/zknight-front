@@ -707,10 +707,10 @@
   resolved "https://registry.yarnpkg.com/@dojoengine/core/-/core-0.0.17.tgz#f47b1e50d6e76bd52714edb4fbfe4fdfc5351ddd"
   integrity sha512-e2p+UQ6lRIS9YJOQa1D0vlydtwKA9w4g+bzWisj4Q2K9hTy5Rq9E6JeNCsPGRigWQYTFszisVYwt/LU89ZCObA==
 
-"@dojoengine/create-burner@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@dojoengine/create-burner/-/create-burner-0.0.15.tgz#980dfdb0b5b6ec029786ddb8e41e6190f4b8de86"
-  integrity sha512-cxSLXkeqnwJq2GnOtGN671NfiC6YR8LNS0csHxdTt7VyEWQR801x/Mb/wgpwPr/KZVNiXzxmXTUsDotmyi5Bqw==
+"@dojoengine/create-burner@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@dojoengine/create-burner/-/create-burner-0.0.17.tgz#1213a6a0f4228610fe7fc00716cfd6da98f80d58"
+  integrity sha512-7BJeiImJ9a1hJfjvePmvJWcYvP4KokZydbrLYls/P+X7Q92iy5s+MzquJ04Dg3ycVundsf9H5cDOqLzaaA9BQw==
   dependencies:
     "@starknet-react/core" "^1.0.3"
     get-starknet-core "^3.2.0"
@@ -1976,6 +1976,11 @@
     "@pixi/constants" "7.2.4"
     "@types/css-font-loading-module" "^0.0.7"
     ismobilejs "^1.1.0"
+
+"@pixi/sound@^5.2.1":
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/@pixi/sound/-/sound-5.2.1.tgz#9872a0e199a3c8021910f3f98acfcaa71c014bfc"
+  integrity sha512-QzopUO1kdn2b6s0LkLuQTWdxn2//Of0x944huDLT53oXMPtfnv9Df2qqZeOVZfjzVU05Q8dRqG171YcWMk1ltg==
 
 "@pixi/sprite-animated@7.2.4":
   version "7.2.4"
@@ -3334,6 +3339,11 @@ flatted@^3.1.0:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
+
+font-awesome@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/font-awesome/-/font-awesome-4.7.0.tgz#8fa8cf0411a1a31afd07b06d2902bb9fc815a133"
+  integrity sha512-U6kGnykA/6bFmg1M/oT9EkFeIYv7JlX3bozwQJWiiLz6L0w3F5vBVPxHlwyX/vtNq1ckcpRKOB9f2Qal/VtFpg==
 
 fraction.js@^4.2.0:
   version "4.3.6"

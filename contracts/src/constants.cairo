@@ -1,3 +1,5 @@
+const NAME: felt252 = 'NAME';
+const PLAYER: felt252 = 'PLAYER';
 const SIZE: u32 = 8;
 const SEED : felt252 = 10000;
 const KNIGHT_HEALTH: u8 = 10;

@@ -12,10 +12,10 @@ mod Create {
 
     use zknight::constants::{KNIGHT_HEALTH, MOB_HEALTH};
 
-    fn execute(ctx: Context, seed: felt252) {
+    fn execute(ctx: Context, player: felt252, seed: felt252, name: felt252) {
         // [Command] Game entity
         let game_id = ctx.world.uuid();
-        let mut game = GameTrait::new(ctx.origin, game_id, seed);
+        let mut game = GameTrait::new(player, game_id, seed, name);
         set!(ctx.world, (game));
 
         // [Command] Map entity

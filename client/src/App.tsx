@@ -1,3 +1,5 @@
+import { sound } from '@pixi/sound';
+import 'font-awesome/css/font-awesome.min.css';
 import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import { useDojo } from './DojoContext';
@@ -23,6 +25,8 @@ const games = [
   { id: 14, score: 75, player: '0x134' },
 ];
 
+// import * as PIXI from 'pixi.js';
+
 function App() {
   const {
     setup: {
@@ -34,6 +38,19 @@ function App() {
   Modal.setAppElement('#root');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLeaderBoardModalOpen, setLeaderBoardModalOpen] = useState(false);
+  const [isMusicPlaying, setMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    if (isMusicPlaying) {
+      sound.play('my-sound');
+    } else {
+      sound.stopAll();
+    }
+  }, [isMusicPlaying]);
+
+  const toggleMusic = () => {
+    setMusicPlaying(!isMusicPlaying);
+  };
 
   const toggleLeaderBoardModal = () => {
     setLeaderBoardModalOpen(!isLeaderBoardModalOpen);
@@ -92,6 +109,7 @@ function App() {
   // const [games, setGames] = useState<any[]>([]);
 
   useEffect(() => {
+    sound.add('my-sound', './assets/music.mp3');
     const fetchData = async () => {
       try {
         const { data } = await graphSdk.getFinishedGames();
@@ -138,6 +156,9 @@ function App() {
         <LeaderBoardButton onClick={toggleLeaderBoardModal}></LeaderBoardButton>
         <div className="flex justify-center items-center text-8xl text">zKnight</div>
         <CreditsButton onClick={credits}></CreditsButton>
+        <button onClick={toggleMusic} className="p-2 text-2xl mr-10 mb-2 w-6">
+          {isMusicPlaying ? <i className="fa fa-volume-up"></i> : <i className="fa fa-volume-off"></i>}
+        </button>
       </div>
 
       <div className="flex-grow mx-auto mt-2">
@@ -197,6 +218,11 @@ function App() {
                 <li>
                   <a href="https://pixijs.io/" target="_blank" rel="noopener noreferrer" className="text-black">
                     Pixijs
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.zapsplat.com/" target="_blank" rel="noopener noreferrer" className="text-black">
+                    Sound from Zapsplat.com
                   </a>
                 </li>
               </ul>
