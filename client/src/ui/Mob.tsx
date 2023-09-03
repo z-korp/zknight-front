@@ -186,7 +186,16 @@ const Mob: React.FC<MobProps> = ({
     if (health === 0) {
       setAnimation(Animation.Death);
     } else {
-      setAnimation(Animation.Hurt);
+      if (
+        (health === 5 && type === 'knight') ||
+        (health === 1 && type === 'barbarian') ||
+        (health === 1 && type === 'wizard') ||
+        (health === 1 && type === 'bowman')
+      ) {
+        setAnimation(Animation.Jump);
+      } else {
+        setAnimation(Animation.Hurt);
+      }
     }
   }, [health]);
 

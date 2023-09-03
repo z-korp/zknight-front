@@ -254,7 +254,7 @@ const Canvas = () => {
             Object.keys(contractState).map((m: string, j) => {
               const mtype = m as MobType;
               const health = contractState[mtype].health;
-              if (m === 'game' || m === 'map') return null;
+              if (m === 'game' || m === 'map' || m == 'hitter') return null;
               return (
                 <>
                   {health !== undefined && health > 0 ? (
@@ -265,18 +265,18 @@ const Canvas = () => {
                           image={heart}
                           anchor={0.5}
                           scale={1.5}
-                          x={1070 - i * 30}
-                          y={59 + (j - 2) * 50}
+                          x={970 - i * 30}
+                          y={59 + (j - 2) * 40}
                         />
                       );
                     })
                   ) : (
-                    <Sprite key={`skull`} image={skull} anchor={0.5} scale={0.5} x={1070} y={59 + (j - 2) * 50} />
+                    <Sprite key={`skull`} image={skull} anchor={0.5} scale={0.5} x={970} y={59 + (j - 2) * 40} />
                   )}
                   <Text
                     text={m.charAt(0).toUpperCase() + m.slice(1)}
-                    x={1100}
-                    y={50 + (j - 2) * 50}
+                    x={1000}
+                    y={50 + (j - 2) * 40}
                     style={
                       new PIXI.TextStyle({
                         align: 'center',
