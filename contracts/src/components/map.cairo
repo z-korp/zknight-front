@@ -6,7 +6,7 @@ use poseidon::poseidon_hash_span;
 use alexandria_data_structures::array_ext::SpanTraitExt;
 
 use zknight::components::tile::{Tile, TileTrait};
-use zknight::constants::{SIZE, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
+use zknight::constants::{NAME, SIZE, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
 
 const MULTIPLIER: u128 = 10000;
 
@@ -17,6 +17,9 @@ struct Map {
     level: u32,
     size: u32,
     spawn: bool,
+    score: u8,
+    over: bool,
+    name: felt252,
 }
 
 // @notice Types
@@ -33,7 +36,7 @@ enum Type {
 // Constants
 
 trait MapTrait {
-    fn new(game_id: u32, level: u32) -> Map;
+    fn new(game_id: u32, level: u32, name: felt252) -> Map;
     fn compose(self: Map, x: u32, y: u32) -> u32;
     fn decompose(self: Map, index: u32) -> (u32, u32);
     fn generate(self: Map, seed: felt252) -> Span<u8>;
@@ -42,8 +45,8 @@ trait MapTrait {
 }
 
 impl MapImpl of MapTrait {
-    fn new(game_id: u32, level: u32) -> Map {
-        Map { game_id: game_id, level: level, size: SIZE, spawn: true }
+    fn new(game_id: u32, level: u32, name: felt252) -> Map {
+        Map { game_id: game_id, level: level, size: SIZE, spawn: true, score: 0, over: false, name: name }
     }
 
     fn compose(self: Map, x: u32, y: u32) -> u32 {
@@ -182,14 +185,14 @@ mod tests {
     #[test]
     #[available_gas(10_000_000)]
     fn test_map_get_type() {
-        let map = Map { game_id: 0, level: 0, size: 3, spawn: true };
+        let map = Map { game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test' };
         assert(map.get_type(0) == Type::Ground(()), 'wrong type');
     }
 
     #[test]
     #[available_gas(10_000_000)]
     fn test_map_get_raw_type() {
-        let map = Map { game_id: 0, level: 0, size: 3, spawn: true };
+        let map = Map { game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test' };
         assert(map.get_raw_type(Type::Ground(())) == 0, 'wrong raw type');
     }
 }

@@ -1,6 +1,7 @@
 import { Container, Sprite, Stage, Text } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import { useEffect, useState } from 'react';
+import { shortString } from 'starknet';
 import { useDojo } from '../DojoContext';
 import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
@@ -13,12 +14,18 @@ import { useElementStore } from '../utils/store';
 import GameOverModal from './GameOverModal'; // importez le composant
 import Map from './Map';
 import Mob, { MobType } from './Mob';
+import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
+import ResetButton from './ResetButton';
 
-const Canvas = () => {
+interface CanvasProps {
+  setMusicPlaying: (bool: boolean) => void;
+}
+
+const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const {
     setup: {
-      systemCalls: { play, spawn },
+      systemCalls: { play, spawn, create },
     },
     account: { account },
   } = useDojo();
@@ -35,16 +42,37 @@ const Canvas = () => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
+  const { map, add_hole, set_size, reset_holes, set_ip } = useElementStore((state) => state);
+
+  const [pseudo, setPseudo] = useState('');
+  const [ip, setIp] = useState<number>(0);
+  useEffect(() => {
+    fetch('https://api.ipify.org?format=json')
+      .then((response) => response.json())
+      .then((data) => {
+        const i = Number(data.ip.replaceAll('.', ''));
+        setIp(i);
+        set_ip(i);
+      })
+      .catch((e) => console.log('error while retrieving ip' + e));
+  }, []);
+
+  const generateNewGame = async () => {
+    setMusicPlaying(true);
+
+    reset_holes();
+
+    const pseudoFelt = shortString.encodeShortString(pseudo);
+    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes);
+  };
+
   useEffect(() => {
     if (knight.health === 0) {
       setIsGameOver(true);
     }
   }, [knight.health]);
 
-  const { map, add_hole, set_size, reset_holes } = useElementStore((state) => state);
-
   useEffect(() => {
-    console.log('map changed, generateGrid');
     setGrid(generateGrid(map));
   }, [map]);
 
@@ -57,10 +85,8 @@ const Canvas = () => {
   }, [mapState]);
 
   useEffect(() => {
-    console.log('mapState', mapState);
     if (mapState.spawn === 0) {
-      console.log('spawnnnnn');
-      spawn(account, add_hole, set_size, reset_holes);
+      spawn(account, ip, add_hole, set_size, reset_holes);
     }
   }, [mapState.spawn]);
 
@@ -68,14 +94,14 @@ const Canvas = () => {
 
   const passTurn = () => {
     // pass turn is a play but with same position
-    if (knight.position) play(account, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
+    if (knight.position) play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Stage
         width={WIDTH}
         height={HEIGHT}
@@ -121,7 +147,7 @@ const Canvas = () => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              play(account, tileX, tileY, add_hole, set_size, reset_holes);
+              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes);
             }
           }
         }}
@@ -217,7 +243,8 @@ const Canvas = () => {
                   })
                 }
               />
-              <Text
+
+              {/*<Text
                 text={`(${hoveredTile.x}, ${hoveredTile.y})`}
                 x={20}
                 y={100}
@@ -245,7 +272,7 @@ const Canvas = () => {
                     fill: '#ffffff',
                   })
                 }
-              />
+              />*/}
             </>
           )}
           {map.size !== 0 &&
@@ -290,7 +317,9 @@ const Canvas = () => {
             })}
         </Container>
       </Stage>
+      {map.size !== 0 && <ResetButton onClick={generateNewGame}></ResetButton>}
       {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
+      {map.size === 0 && <NewGame onClick={generateNewGame} onPseudoChange={setPseudo} />}
 
       <GameOverModal score={score} isOpen={isGameOver} onClose={() => setIsGameOver(false)} />
     </div>

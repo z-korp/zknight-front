@@ -1,8 +1,10 @@
 import { useComponentValue } from '@dojoengine/react';
 import { EntityIndex } from '@latticexyz/recs';
+import { useEffect } from 'react';
 import { useDojo } from '../DojoContext';
 import { getEntityIdFromKeys } from '../dojo/createSystemCalls';
 import { Coordinate } from '../type/GridElement';
+import { useElementStore } from '../utils/store';
 
 export enum TileType {
   Ground,
@@ -45,15 +47,16 @@ export const useComponentStates = () => {
     setup: {
       components: { Character, Game, Map, Tile },
     },
-    account: { account },
   } = useDojo();
 
-  const entityId = parseInt(account.address) as EntityIndex;
+  const { ip } = useElementStore((state) => state);
+
+  const entityId = ip as EntityIndex;
   const game = useComponentValue(Game, entityId);
 
-  // useEffect(() => {
-  //   console.log('game', game);
-  // }, [game]);
+  useEffect(() => {
+    console.log('game', game);
+  }, [game]);
 
   const entityId2 = game?.game_id as EntityIndex;
   const map = useComponentValue(Map, entityId2);
@@ -74,6 +77,10 @@ export const useComponentStates = () => {
       BigInt(knight?.index),
     ]);
   const knight_position = useComponentValue(Tile, entityId3);
+
+  useEffect(() => {
+    console.log(knight);
+  }, [knight]);
 
   // ===================================================================================================================
   // BARBARIAN

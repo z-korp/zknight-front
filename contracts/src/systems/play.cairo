@@ -77,8 +77,8 @@ mod Play {
                 // [Command] Update Tile
                 new_tile.set_ground_type();
                 set!(ctx.world, (new_tile));
-                // [Effect] Update the game score
-                game.score += 11;
+                // [Effect] Update the map score
+                map.score += 11;
             }
         } else {
             // [Effect] Move Knight, update the knight position in storage and hashmap
@@ -251,21 +251,22 @@ mod Play {
         }
 
         // [Effect] Score and game evalutation
-        game.score -= if game.score > 0 { 1 } else { 0 };
+        map.score -= if map.score > 0 { 1 } else { 0 };
         if knight_char.health == 0 {
             // [Command] Update Game
             game.over = true;
             set!(ctx.world, (game));
+            // [Command] Update Map
+            map.over = true;
+            set!(ctx.world, (map));
         } else if barbarian_char.health == 0 && bowman_char.health == 0 && wizard_char.health == 0 {
-            // [Command] Update Game
-            set!(ctx.world, (game));
             // [Command] Update Map
             map.level += 1;
             map.spawn = false;
             set!(ctx.world, (map));
         } else {
-            // [Command] Update Game
-            set!(ctx.world, (game));
+            // [Command] Update Map
+            set!(ctx.world, (map));
         }
     }
 }

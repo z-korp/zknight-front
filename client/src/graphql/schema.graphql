@@ -10,6 +10,7 @@ query getEntities {
             score
             over
             seed
+            name
           }
           ... on Map {
             level
@@ -34,18 +35,13 @@ query getEntities {
 }
 
 query getFinishedGames {
-  entities(keys: ["%"]) {
+  gameComponents {
     edges {
       node {
-        keys
-        components {
-          __typename
-          ... on Game {
-            game_id
-            score
-            over
-          }
-        }
+        game_id
+        score
+        over
+        name
       }
     }
   }

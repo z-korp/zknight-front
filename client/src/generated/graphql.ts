@@ -139,6 +139,7 @@ export type Game = {
   __typename?: 'Game';
   entity?: Maybe<Entity>;
   game_id?: Maybe<Scalars['u32']['output']>;
+  name?: Maybe<Scalars['felt252']['output']>;
   over?: Maybe<Scalars['bool']['output']>;
   score?: Maybe<Scalars['u8']['output']>;
   seed?: Maybe<Scalars['felt252']['output']>;
@@ -163,6 +164,7 @@ export type GameOrder = {
 
 export enum GameOrderOrderField {
   GameId = 'GAME_ID',
+  Name = 'NAME',
   Over = 'OVER',
   Score = 'SCORE',
   Seed = 'SEED',
@@ -175,6 +177,12 @@ export type GameWhereInput = {
   game_idLT?: InputMaybe<Scalars['Int']['input']>;
   game_idLTE?: InputMaybe<Scalars['Int']['input']>;
   game_idNEQ?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  nameGT?: InputMaybe<Scalars['String']['input']>;
+  nameGTE?: InputMaybe<Scalars['String']['input']>;
+  nameLT?: InputMaybe<Scalars['String']['input']>;
+  nameLTE?: InputMaybe<Scalars['String']['input']>;
+  nameNEQ?: InputMaybe<Scalars['String']['input']>;
   over?: InputMaybe<Scalars['Int']['input']>;
   overGT?: InputMaybe<Scalars['Int']['input']>;
   overGTE?: InputMaybe<Scalars['Int']['input']>;
@@ -446,20 +454,16 @@ export type GetFinishedGamesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFinishedGamesQuery = {
   __typename?: 'Query';
-  entities?: {
-    __typename?: 'EntityConnection';
+  gameComponents?: {
+    __typename?: 'GameConnection';
     edges?: Array<{
-      __typename?: 'EntityEdge';
+      __typename?: 'GameEdge';
       node?: {
-        __typename?: 'Entity';
-        keys?: Array<string | null> | null;
-        components?: Array<
-          | { __typename: 'Character' }
-          | { __typename: 'Game'; game_id?: any | null; score?: any | null; over?: any | null }
-          | { __typename: 'Map' }
-          | { __typename: 'Tile' }
-          | null
-        > | null;
+        __typename?: 'Game';
+        game_id?: any | null;
+        score?: any | null;
+        over?: any | null;
+        name?: string | null;
       } | null;
     } | null> | null;
   } | null;
@@ -478,6 +482,7 @@ export const GetEntitiesDocument = gql`
               score
               over
               seed
+              name
             }
             ... on Map {
               level
@@ -503,18 +508,13 @@ export const GetEntitiesDocument = gql`
 `;
 export const GetFinishedGamesDocument = gql`
   query getFinishedGames {
-    entities(keys: ["%"]) {
+    gameComponents(where: { over: 1 }) {
       edges {
         node {
-          keys
-          components {
-            __typename
-            ... on Game {
-              game_id
-              score
-              over
-            }
-          }
+          game_id
+          score
+          over
+          name
         }
       }
     }

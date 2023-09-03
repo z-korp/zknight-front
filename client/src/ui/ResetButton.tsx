@@ -5,19 +5,19 @@ interface NewGameButtonProps {
   disabled?: boolean; // Optional disabled prop
 }
 
-const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick, disabled }) => {
+const ResetButton: React.FC<NewGameButtonProps> = ({ onClick, disabled }) => {
   return (
     <button
       className={`bg-blue-500 ${
         disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
       } my-10 text-white font-bold py-2 px-4 rounded`}
-      style={{ width: '100%' }}
+      style={{ width: '160px' }}
       onClick={onClick}
       disabled={disabled}
     >
-      New Game
+      Reset Game
     </button>
   );
 };
 
-export default NewGameButton;
+export default ResetButton;

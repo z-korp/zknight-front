@@ -1,6 +1,6 @@
 import { Components, EntityIndex, Schema, setComponent, updateComponent } from '@latticexyz/recs';
 import { poseidonHashMany } from 'micro-starknet';
-import { Account, Event, InvokeTransactionReceiptResponse } from 'starknet';
+import { Account, Event, InvokeTransactionReceiptResponse, shortString } from 'starknet';
 import { TileType } from '../hooks/useComponentStates';
 import { ClientComponents } from './createClientComponents';
 import { SetupNetworkResult } from './setupNetwork';
@@ -16,13 +16,15 @@ export function createSystemCalls(
 ) {
   const create = async (
     signer: Account,
+    ip: number, // felt
     seed: number,
+    pseudo: string, // felt
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
     reset_holes: () => void
   ) => {
     try {
-      const tx = await execute(signer, 'Create', [seed]);
+      const tx = await execute(signer, 'Create', [ip, seed, pseudo]);
 
       console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
@@ -45,6 +47,7 @@ export function createSystemCalls(
 
   const play = async (
     signer: Account,
+    ip: number, // felt
     x: number,
     y: number,
     add_hole: (x: number, y: number) => void,
@@ -52,7 +55,7 @@ export function createSystemCalls(
     reset_holes: () => void
   ) => {
     try {
-      const tx = await execute(signer, 'Play', [x, y]);
+      const tx = await execute(signer, 'Play', [ip, x, y]);
 
       console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
@@ -80,12 +83,13 @@ export function createSystemCalls(
 
   const spawn = async (
     signer: Account,
+    ip: number,
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
     reset_holes: () => void
   ) => {
     try {
-      const tx = await execute(signer, 'Spawn', []);
+      const tx = await execute(signer, 'Spawn', [ip]);
 
       console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
@@ -189,12 +193,12 @@ export function setComponentFromEvent(
     }
   } else if (componentName === 'Game') {
     const [player_id] = keys;
-    const [game_id, score, over, seed] = values;
+    const [game_id, score, over, seed, name] = values;
     gameId = Number(game_id);
     console.log(
       `[Game: KEYS: (player_id: ${player_id}) - VALUES: (game_id: ${Number(game_id)}, score: ${Number(
         score
-      )}, over: ${Boolean(Number(over))}, seed: ${Number(seed)})]`
+      )}, over: ${Boolean(Number(over))}, seed: ${Number(seed)}, name: ${shortString.decodeShortString(name)})]`
     );
   } else if (componentName === 'Tile') {
     const [game_id, map_id, index] = keys;

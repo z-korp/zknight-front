@@ -189,7 +189,7 @@ const Mob: React.FC<MobProps> = ({
       setAnimation(Animation.Death);
     } else {
       if (
-        (health === 5 && type === 'knight') ||
+        (health === 10 && type === 'knight') ||
         (health === 1 && type === 'barbarian') ||
         (health === 1 && type === 'wizard') ||
         (health === 1 && type === 'bowman')
@@ -217,6 +217,7 @@ const Mob: React.FC<MobProps> = ({
           ? getDirection(targetPosition, knightPosition, orientation)
           : orientation;
         setOrientation(new_orientation);
+
         if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);
         else if (type === 'bowman') setAnimation(Animation.BowAttack);
         else if (type === 'wizard') setAnimation(Animation.StaffAttack);
