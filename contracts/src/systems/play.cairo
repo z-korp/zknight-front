@@ -130,7 +130,7 @@ mod Play {
                     // [Command] Update Character
                     let damage = if BARBARIAN_DAMAGE > char.health { char.health } else { BARBARIAN_DAMAGE };
                     char.health -= damage;
-                    char.hitter = knight_char._type;
+                    char.hitter = barbarian_char._type;
                     char.hit = damage;
                     set!(ctx.world, (char));
                 };
@@ -173,7 +173,7 @@ mod Play {
                     // [Command] Update Character
                     let damage = if BOWMAN_DAMAGE > char.health { char.health } else { BOWMAN_DAMAGE };
                     char.health -= damage;
-                    char.hitter = knight_char._type;
+                    char.hitter = bowman_char._type;
                     char.hit = damage;
                     set!(ctx.world, (char));
                 };
@@ -216,7 +216,7 @@ mod Play {
                     // [Command] Update Character
                     let damage = if WIZARD_DAMAGE > char.health { char.health } else { WIZARD_DAMAGE };
                     char.health -= damage;
-                    char.hitter = knight_char._type;
+                    char.hitter = wizard_char._type;
                     char.hit = damage;
                     set!(ctx.world, (char));
                 };
