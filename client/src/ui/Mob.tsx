@@ -49,34 +49,34 @@ const getFramesFromType = (mob_name: string, type: Animation, direction: Directi
   const frames = Object.keys(resource.data.frames);
   let filtered = [];
   if (type === Animation.Idle) {
-    console.log('Idle Frame', mob_name);
+    console.log('[', mob_name, ']', 'Idle Frame');
     filtered = frames.filter((e) => e.includes('idle'));
   } else if (type === Animation.Walk) {
-    console.log('Walk Frame', mob_name);
+    console.log('[', mob_name, ']', 'Walk Frame');
     filtered = frames.filter((e) => e.includes('walk'));
   } else if (type === Animation.Carry) {
-    console.log('Carry Frame', mob_name);
+    console.log('[', mob_name, ']', 'Carry Frame');
     filtered = frames.filter((e) => e.includes('carry'));
   } else if (type === Animation.Jump) {
-    console.log('Jump Frame', mob_name);
+    console.log('[', mob_name, ']', 'Jump Frame');
     filtered = frames.filter((e) => e.includes('jump'));
   } else if (type === Animation.SwordAttack) {
-    console.log('SwordAttack Frame', mob_name);
+    console.log('[', mob_name, ']', 'SwordAttack Frame');
     filtered = frames.filter((e) => e.includes('sword'));
   } else if (type === Animation.BowAttack) {
+    console.log('[', mob_name, ']', 'BowAttack Frame');
     filtered = frames.filter((e) => e.includes('-bow'));
-    console.log('BowAttack Frame', mob_name);
   } else if (type === Animation.StaffAttack) {
-    console.log('StaffAttack Frame', mob_name);
+    console.log('[', mob_name, ']', 'StaffAttack Frame');
     filtered = frames.filter((e) => e.includes('staff'));
   } else if (type === Animation.Throw) {
-    console.log('Throw Frame', mob_name);
+    console.log('[', mob_name, ']', 'Throw Frame');
     filtered = frames.filter((e) => e.includes('throw'));
   } else if (type === Animation.Hurt) {
-    console.log('Hurt Frame', mob_name);
+    console.log('[', mob_name, ']', 'Hurt Frame');
     filtered = frames.filter((e) => e.includes('hurt'));
   } else if (type === Animation.Death) {
-    console.log('Death Frame', mob_name);
+    console.log('[', mob_name, ']', 'Death Frame');
     filtered = frames.filter((e) => e.includes('death'));
   } else {
     throw new Error('Invalid AnimationType');
@@ -99,6 +99,8 @@ const getFramesFromType = (mob_name: string, type: Animation, direction: Directi
   } else if (direction === Direction.W) {
     filtered = filtered.filter((e) => /-W-/.test(e) && !/-SW-/.test(e) && !/-NW-/.test(e));
   }
+
+  //console.log(filtered);
 
   return filtered.map((frame: any) => {
     const texture = Texture.from(frame);
@@ -205,26 +207,24 @@ const Mob: React.FC<MobProps> = ({
     }
   }, [isMoving]);
 
-  const [isAttacking, setIsAttacking] = useState(false);
-
   useEffect(() => {
     if (isHitter === true) {
-      setIsAttacking(true);
+      //console.log(type, 'isHitter changed and is true');
+      setCurrentFrame(0);
+
+      if (knightPosition !== undefined) {
+        const new_orientation = knightPosition
+          ? getDirection(targetPosition, knightPosition, orientation)
+          : orientation;
+        setOrientation(new_orientation);
+        if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);
+        else if (type === 'bowman') setAnimation(Animation.BowAttack);
+        else if (type === 'wizard') setAnimation(Animation.StaffAttack);
+      }
     } else {
-      setIsAttacking(false);
+      //console.log(type, 'isHitter changed and is false');
     }
   }, [isHitter]);
-
-  useEffect(() => {
-    if (isAttacking === true) {
-      setCurrentFrame(0);
-      const new_orientation = knightPosition ? getDirection(targetPosition, knightPosition, orientation) : orientation;
-      setOrientation(new_orientation);
-      if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);
-      else if (type === 'bowman') setAnimation(Animation.BowAttack);
-      else if (type === 'wizard') setAnimation(Animation.StaffAttack);
-    }
-  }, [isAttacking, knightPosition, orientation, targetPosition, type]);
 
   // current position absolute during movement
   // will be changing during the movement, towards the absoluteTargetPosition
@@ -294,7 +294,6 @@ const Mob: React.FC<MobProps> = ({
               animation === Animation.SwordAttack
             ) {
               setCurrentFrame(0);
-              setIsAttacking(false);
               setAnimation(Animation.Idle);
             } else {
               setCurrentFrame(0);
