@@ -16,9 +16,9 @@ mod Play {
 
     use debug::PrintTrait;
 
-    fn execute(ctx: Context, x: u32, y: u32) {
+    fn execute(ctx: Context, player: felt252, x: u32, y: u32) {
         // [Command] Game entity
-        let mut game = get!(ctx.world, ctx.origin, (Game));
+        let mut game = get!(ctx.world, player, (Game));
 
         // [Check] Game is not over
         assert(!game.over, 'Game is over');

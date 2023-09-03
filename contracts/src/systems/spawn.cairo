@@ -13,9 +13,9 @@ mod Spawn {
 
     use zknight::constants::{KNIGHT_HEALTH, MOB_HEALTH};
 
-    fn execute(ctx: Context) {
+    fn execute(ctx: Context, player: felt252) {
         // [Command] Game entity
-        let game = get!(ctx.world, ctx.origin, (Game));
+        let game = get!(ctx.world, player, (Game));
 
         // [Check] Map must not be spawned
         let mut map = get!(ctx.world, game.game_id, (Map));

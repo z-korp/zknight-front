@@ -13,7 +13,7 @@ mod Tests {
 
     use dojo::test_utils::spawn_test_world;
 
-    use zknight::constants::{SEED, KNIGHT_HEALTH, MOB_HEALTH, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
+    use zknight::constants::{SEED, NAME, PLAYER, KNIGHT_HEALTH, MOB_HEALTH, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
     use zknight::components::game::Game;
     use zknight::components::map::{Map, MapTrait, Type, _compose, _decompose};
     use zknight::components::tile::{Tile, TileTrait};
@@ -27,13 +27,14 @@ mod Tests {
         let world = Setup::spawn_game();
 
         // [Create]
-        world.execute('Create', array![SEED]);
+        world.execute('Create', array![PLAYER, SEED, NAME]);
 
         // [Assert] Game
-        let game = get!(world, starknet::get_contract_address(), (Game));
+        let game = get!(world, PLAYER, (Game));
         assert(game.game_id == 0, 'Wrong game id');
         assert(game.score == 0, 'Wrong score');
         assert(game.seed == SEED, 'Wrong seed');
+        assert(game.name == NAME, 'Wrong name');
 
         // [Assert] Map
         let map = get!(world, game.game_id, (Map));
@@ -56,7 +57,7 @@ mod Tests {
 
         // [Play] Attack
         let target_tile = TileTrait::new(6, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
 
         // [Assert] Barbarian Character
         let barbarian_char = get!(world, (game.game_id, BARBARIAN_TYPE).into(), (Character));
@@ -73,7 +74,7 @@ mod Tests {
 
         // [Play] Move
         let target_tile = TileTrait::new(6, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
 
         // [Assert] Knight Character
         let knight_char = get!(world, (game.game_id, KNIGHT_TYPE).into(), (Character));
@@ -98,7 +99,7 @@ mod Tests {
         assert(bowman_tile.y == 2, 'Wrong bowman y');
 
         // [Assert] Game
-        let game = get!(world, starknet::get_contract_address(), (Game));
+        let game = get!(world, PLAYER, (Game));
         assert(game.score == 9, 'Wrong score');
     }
 
@@ -109,8 +110,8 @@ mod Tests {
         let world = Setup::spawn_game();
 
         // [Create]
-        world.execute('Create', array![SEED]);
-        let game = get!(world, starknet::get_contract_address(), (Game));
+        world.execute('Create', array![PLAYER, SEED, NAME]);
+        let game = get!(world, PLAYER, (Game));
         let map = get!(world, game.game_id, (Map));
 
         // [Assert] Knight Character
@@ -120,7 +121,7 @@ mod Tests {
 
         // [Play] Pass
         let target_tile = TileTrait::new(7, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
 
         // [Assert] Knight Character
         let knight_char = get!(world, (game.game_id, KNIGHT_TYPE).into(), (Character));
@@ -136,41 +137,41 @@ mod Tests {
 
         // [Create] Generate
         let seed = 1000;
-        world.execute('Create', array![seed]);
+        world.execute('Create', array![PLAYER, seed, NAME]);
         
         // [Play] Attack
         let target_tile = TileTrait::new(7, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(7, 1);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(6, 1);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(6, 0);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(5, 0);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(4, 0);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(4, 1);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Attack
         let target_tile = TileTrait::new(4, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Move
         let target_tile = TileTrait::new(4, 2);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
         // [Play] Attack
         let target_tile = TileTrait::new(4, 3);
-        world.execute('Play', array![target_tile.x.into(), target_tile.y.into()]);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
 
         // [Assert] Game
-        let game = get!(world, starknet::get_contract_address(), (Game));
+        let game = get!(world, PLAYER, (Game));
         assert(game.game_id == 0, 'Wrong game id');
         assert(game.score == 19, 'Wrong score');
         assert(game.over == false, 'Wrong over status');
@@ -185,7 +186,7 @@ mod Tests {
         assert(map.spawn == false, 'Wrong spawn');
 
         // [Spawn]
-        world.execute('Spawn', array![]);
+        world.execute('Spawn', array![PLAYER]);
 
         // [Assert] Map
         let map = get!(world, game.game_id, (Map));
