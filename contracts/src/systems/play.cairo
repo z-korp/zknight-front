@@ -49,6 +49,8 @@ mod Play {
         // [Command] Knight entity
         let knight_key = (game.game_id, CharacterTrait::get_knight_type());
         let mut knight_char = get!(ctx.world, knight_key.into(), (Character));
+        knight_char.hitter = 0;
+        knight_char.hit = 0;
         let mut knight_tile = tiles.get(knight_char.index.into()).deref();
 
         // [Check] Target position is in range, target is not a hole
@@ -99,16 +101,22 @@ mod Play {
         // [Command] Barbarian entity
         let barbarian_key = (game.game_id, CharacterTrait::get_barbarian_type());
         let mut barbarian_char = get!(ctx.world, barbarian_key.into(), (Character));
+        barbarian_char.hitter = 0;
+        barbarian_char.hit = 0;
         let mut barbarian_tile = tiles.get(barbarian_char.index.into()).deref();
 
         // [Command] Bowman entity
         let bowman_key = (game.game_id, CharacterTrait::get_bowman_type());
         let mut bowman_char = get!(ctx.world, bowman_key.into(), (Character));
+        bowman_char.hitter = 0;
+        bowman_char.hit = 0;
         let mut bowman_tile = tiles.get(bowman_char.index.into()).deref();
 
         // [Command] Wizard entity
         let wizard_key = (game.game_id, CharacterTrait::get_wizard_type());
         let mut wizard_char = get!(ctx.world, wizard_key.into(), (Character));
+        wizard_char.hitter = 0;
+        wizard_char.hit = 0;
         let mut wizard_tile = tiles.get(wizard_char.index.into()).deref();
 
         // [Effect] Barbarian: Attack if possible, move otherwise
