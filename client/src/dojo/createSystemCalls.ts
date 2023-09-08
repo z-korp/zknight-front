@@ -23,7 +23,8 @@ export function createSystemCalls(
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
     reset_holes: () => void,
-    set_hit_mob: (mob: MobType) => void
+    set_hit_mob: (mob: MobType) => void,
+    set_turn: (mob: TileType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Create', [ip, seed, pseudo]);
@@ -37,7 +38,7 @@ export function createSystemCalls(
 
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
       }
     } catch (e) {
       console.log(e);
@@ -54,7 +55,8 @@ export function createSystemCalls(
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
     reset_holes: () => void,
-    set_hit_mob: (mob: MobType) => void
+    set_hit_mob: (mob: MobType) => void,
+    set_turn: (mob: TileType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Play', [ip, x, y]);
@@ -68,7 +70,7 @@ export function createSystemCalls(
 
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
       }
     } catch (e) {
       console.log(e);
@@ -83,7 +85,8 @@ export function createSystemCalls(
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
     reset_holes: () => void,
-    set_hit_mob: (mob: MobType) => void
+    set_hit_mob: (mob: MobType) => void,
+    set_turn: (mob: TileType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Spawn', [ip]);
@@ -98,7 +101,7 @@ export function createSystemCalls(
       console.log(events);
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
       }
     } catch (e) {
       console.log(e);
@@ -119,7 +122,8 @@ export async function executeEvents(
   add_hole: (x: number, y: number) => void,
   set_size: (size: number) => void,
   reset_holes: () => void,
-  set_hit_mob: (mob: MobType) => void
+  set_hit_mob: (mob: MobType) => void,
+  set_turn: (mob: TileType) => void
 ) {
   const gameEvents = events.filter((e): e is GameEvent & ComponentData => e.type === 'Game');
   // console.log('gameEvents', gameEvents);
@@ -153,6 +157,7 @@ export async function executeEvents(
   console.log('characterEvents', characterEvents);
   for (const e of characterEvents) {
     if (e.hitter !== 0) {
+      set_turn(e.hitter);
       // the mob has taken dmg
       let hit_mob: MobType = 'knight';
       if (e._type === TileType.Barbarian) hit_mob = 'barbarian';
@@ -160,6 +165,8 @@ export async function executeEvents(
       else if (e._type === TileType.Wizard) hit_mob = 'wizard';
       console.log('set_hit_mob', hit_mob);
       set_hit_mob(hit_mob);
+    } else {
+      set_turn(e._type);
     }
     //console.log(e._type);
     setComponent(e.component, e.entityIndex, e.componentValues);
@@ -167,6 +174,7 @@ export async function executeEvents(
     await sleep(700);
     updateComponent(e.component, e.entityIndex, { hitter: 0 });
   }
+  set_turn(TileType.Knight);
 
   await sleep(1000);
 }

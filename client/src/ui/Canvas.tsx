@@ -7,6 +7,7 @@ import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
 import { TileType, useComponentStates } from '../hooks/useComponentStates';
 import { useGrid } from '../hooks/useGrid';
+import useIP from '../hooks/useIP';
 import { Coordinate, GridElement } from '../type/GridElement';
 import { fetchData } from '../utils/fetchData';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, generateGrid, to_grid_coordinate } from '../utils/grid';
@@ -18,10 +19,18 @@ import Mob, { MobType } from './Mob';
 import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
 import ResetButton from './ResetButton';
+import Sword from './Sword';
 
 interface CanvasProps {
   setMusicPlaying: (bool: boolean) => void;
 }
+
+const getYFromMob = (m: TileType) => {
+  if (m === TileType.Knight) return 59;
+  else if (m === TileType.Barbarian) return 99;
+  else if (m === TileType.Bowman) return 139;
+  else return 189;
+};
 
 const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const {
@@ -44,26 +53,21 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
-  const { map, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard, set_hit_mob } = useElementStore(
-    (state) => state
-  );
+  const { map, turn, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard, set_hit_mob, set_turn } =
+    useElementStore((state) => state);
 
   useEffect(() => {
     console.log('hitPosition', hitPosition);
   }, [hitPosition]);
 
   const [pseudo, setPseudo] = useState('');
-  const [ip, setIp] = useState<number>(0);
+  const { ip, loading, error } = useIP();
   useEffect(() => {
-    fetch('https://api.ipify.org?format=json')
-      .then((response) => response.json())
-      .then((data) => {
-        const i = Number(data.ip.replaceAll('.', ''));
-        setIp(i);
-        set_ip(i);
-      })
-      .catch((e) => console.log('error while retrieving ip' + e));
-  }, []);
+    if (!loading && ip) {
+      set_ip(ip);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ip, loading]);
 
   const generateNewGame = async () => {
     setMusicPlaying(true);
@@ -71,7 +75,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
     reset_holes();
 
     const pseudoFelt = shortString.encodeShortString(pseudo);
-    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes, set_hit_mob);
+    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
   };
 
   useEffect(() => {
@@ -103,7 +107,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   useEffect(() => {
     if (mapState.spawn === 0) {
-      spawn(account, ip, add_hole, set_size, reset_holes, set_hit_mob);
+      spawn(account, ip, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
     }
   }, [mapState.spawn]);
 
@@ -112,11 +116,13 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const passTurn = () => {
     // pass turn is a play but with same position
     if (knight.position)
-      play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes, set_hit_mob);
+      play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+
+  const [targetY, setTargetY] = useState(59);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -165,7 +171,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes, set_hit_mob);
+              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
             }
           }
         }}
@@ -314,17 +320,18 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
                           image={heart}
                           anchor={0.5}
                           scale={1.5}
-                          x={970 - i * 30}
+                          x={950 - i * 30}
                           y={59 + (j - 2) * 40}
                         />
                       );
                     })
                   ) : (
-                    <Sprite key={`skull`} image={skull} anchor={0.5} scale={0.5} x={970} y={59 + (j - 2) * 40} />
+                    <Sprite key={`skull`} image={skull} anchor={0.5} scale={0.5} x={950} y={59 + (j - 2) * 40} />
                   )}
+
                   <Text
                     text={m.charAt(0).toUpperCase() + m.slice(1)}
-                    x={1000}
+                    x={980}
                     y={50 + (j - 2) * 40}
                     style={
                       new PIXI.TextStyle({
@@ -339,8 +346,10 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
                 </>
               );
             })}
+          {map.size !== 0 && <Sword targetY={getYFromMob(turn)} />}
         </Container>
       </Stage>
+
       {map.size !== 0 && <ResetButton onClick={generateNewGame}></ResetButton>}
       {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
       {map.size === 0 && <NewGame onClick={generateNewGame} onPseudoChange={setPseudo} />}
