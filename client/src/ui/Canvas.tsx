@@ -33,7 +33,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   } = useDojo();
 
   const contractState = useComponentStates();
-  const { knight, barbarian, wizard, bowman, hitter, game, map: mapState } = contractState;
+  const { knight, barbarian, wizard, bowman, hitter, game, map: mapState, hitPosition } = contractState;
 
   const [score, setScore] = useState<number>(0);
   const [level, setLevel] = useState<number>(0);
@@ -44,7 +44,13 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
 
-  const { map, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard } = useElementStore((state) => state);
+  const { map, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard, set_hit_mob } = useElementStore(
+    (state) => state
+  );
+
+  useEffect(() => {
+    console.log('hitPosition', hitPosition);
+  }, [hitPosition]);
 
   const [pseudo, setPseudo] = useState('');
   const [ip, setIp] = useState<number>(0);
@@ -65,14 +71,14 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
     reset_holes();
 
     const pseudoFelt = shortString.encodeShortString(pseudo);
-    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes);
+    create(account, ip, 1000, pseudoFelt, add_hole, set_size, reset_holes, set_hit_mob);
   };
 
   useEffect(() => {
-    if (knight.health === 0) {
+    if (game.over === true) {
       setIsGameOver(true);
     }
-  }, [knight.health]);
+  }, [game.over]);
 
   useEffect(() => {
     const fetchAndProcessData = async () => {
@@ -97,7 +103,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   useEffect(() => {
     if (mapState.spawn === 0) {
-      spawn(account, ip, add_hole, set_size, reset_holes);
+      spawn(account, ip, add_hole, set_size, reset_holes, set_hit_mob);
     }
   }, [mapState.spawn]);
 
@@ -105,7 +111,8 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   const passTurn = () => {
     // pass turn is a play but with same position
-    if (knight.position) play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes);
+    if (knight.position)
+      play(account, ip, knight.position?.x, knight.position?.y, add_hole, set_size, reset_holes, set_hit_mob);
   };
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
@@ -158,7 +165,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
             //verify if the tile is in the result
             const tile = result.find((e) => e.x === tileX && e.y === tileY);
             if (tile) {
-              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes);
+              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes, set_hit_mob);
             }
           }
         }}
@@ -178,6 +185,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
               health={knight.health}
               isHitter={hitter === TileType.Knight}
               knightPosition={knight.position}
+              hitPosition={hitPosition}
             />
           )}
 
@@ -193,6 +201,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
               health={barbarian.health}
               isHitter={hitter === TileType.Barbarian}
               knightPosition={knight.position}
+              hitPosition={hitPosition}
             />
           )}
           {bowman.position && bowman.health !== undefined && (
@@ -207,6 +216,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
               health={bowman.health}
               isHitter={hitter === TileType.Bowman}
               knightPosition={knight.position}
+              hitPosition={hitPosition}
             />
           )}
           {wizard.position && wizard.health !== undefined && (
@@ -221,6 +231,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
               health={wizard.health}
               isHitter={hitter === TileType.Wizard}
               knightPosition={knight.position}
+              hitPosition={hitPosition}
             />
           )}
 
@@ -289,8 +300,10 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
           {map.size !== 0 &&
             Object.keys(contractState).map((m: string, j) => {
               const mtype = m as MobType;
+              //console.log('mtype', mtype);
+              if (m === 'game' || m === 'map' || m === 'hitter' || m === 'hitPosition') return null;
               const health = contractState[mtype].health;
-              if (m === 'game' || m === 'map' || m == 'hitter') return null;
+
               return (
                 <>
                   {health !== undefined && health > 0 ? (

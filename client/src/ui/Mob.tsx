@@ -19,6 +19,7 @@ interface MobProps {
   health: number;
   isHitter: boolean;
   knightPosition?: Coordinate;
+  hitPosition?: Coordinate;
 }
 
 enum Animation {
@@ -144,6 +145,7 @@ const Mob: React.FC<MobProps> = ({
   health,
   isHitter,
   knightPosition,
+  hitPosition,
 }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [counterAnim, setCounterAnim] = useState(0);
@@ -212,10 +214,9 @@ const Mob: React.FC<MobProps> = ({
       //console.log(type, 'isHitter changed and is true');
       setCurrentFrame(0);
 
-      if (knightPosition !== undefined) {
-        const new_orientation = knightPosition
-          ? getDirection(targetPosition, knightPosition, orientation)
-          : orientation;
+      //console.log('hitPosition', hitPosition);
+      if (hitPosition !== undefined) {
+        const new_orientation = hitPosition ? getDirection(targetPosition, hitPosition, orientation) : orientation;
         setOrientation(new_orientation);
 
         if (type === 'knight' || type === 'barbarian') setAnimation(Animation.SwordAttack);

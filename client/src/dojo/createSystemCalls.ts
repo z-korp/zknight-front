@@ -1,7 +1,8 @@
-import { Component, Components, EntityIndex, Schema, setComponent } from '@latticexyz/recs';
+import { Component, Components, EntityIndex, Schema, setComponent, updateComponent } from '@latticexyz/recs';
 import { poseidonHashMany } from 'micro-starknet';
 import { Account, Event, InvokeTransactionReceiptResponse, shortString } from 'starknet';
 import { TileType } from '../hooks/useComponentStates';
+import { MobType } from '../ui/Mob';
 import { ClientComponents } from './createClientComponents';
 import { SetupNetworkResult } from './setupNetwork';
 
@@ -21,7 +22,8 @@ export function createSystemCalls(
     pseudo: string, // felt
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
-    reset_holes: () => void
+    reset_holes: () => void,
+    set_hit_mob: (mob: MobType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Create', [ip, seed, pseudo]);
@@ -35,7 +37,7 @@ export function createSystemCalls(
 
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes);
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
       }
     } catch (e) {
       console.log(e);
@@ -51,7 +53,8 @@ export function createSystemCalls(
     y: number,
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
-    reset_holes: () => void
+    reset_holes: () => void,
+    set_hit_mob: (mob: MobType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Play', [ip, x, y]);
@@ -65,12 +68,7 @@ export function createSystemCalls(
 
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes);
-
-        /*updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Wizard)]), { hitter: 0 });
-        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Barbarian)]), { hitter: 0 });
-        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Knight)]), { hitter: 0 });
-        updateComponent(Character, getEntityIdFromKeys([BigInt(game_id), BigInt(TileType.Bowman)]), { hitter: 0 });*/
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
       }
     } catch (e) {
       console.log(e);
@@ -84,7 +82,8 @@ export function createSystemCalls(
     ip: number,
     add_hole: (x: number, y: number) => void,
     set_size: (size: number) => void,
-    reset_holes: () => void
+    reset_holes: () => void,
+    set_hit_mob: (mob: MobType) => void
   ) => {
     try {
       const tx = await execute(signer, 'Spawn', [ip]);
@@ -99,7 +98,7 @@ export function createSystemCalls(
       console.log(events);
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes);
+        await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob);
       }
     } catch (e) {
       console.log(e);
@@ -119,7 +118,8 @@ export async function executeEvents(
   events: TransformedEvent[],
   add_hole: (x: number, y: number) => void,
   set_size: (size: number) => void,
-  reset_holes: () => void
+  reset_holes: () => void,
+  set_hit_mob: (mob: MobType) => void
 ) {
   const gameEvents = events.filter((e): e is GameEvent & ComponentData => e.type === 'Game');
   // console.log('gameEvents', gameEvents);
@@ -131,6 +131,7 @@ export async function executeEvents(
   // console.log('mapEvents', mapEvents);
   for (const e of mapEvents) {
     set_size(e.size);
+
     Map_size = e.size;
     if (e.spawn === 0) {
       reset_holes();
@@ -149,12 +150,22 @@ export async function executeEvents(
   }
 
   const characterEvents = events.filter((e): e is CharacterEvent & ComponentData => e.type === 'Character');
-  characterEvents.sort((a, b) => a._type - b._type);
+  console.log('characterEvents', characterEvents);
   for (const e of characterEvents) {
-    console.log(e._type);
+    if (e.hitter !== 0) {
+      // the mob has taken dmg
+      let hit_mob: MobType = 'knight';
+      if (e._type === TileType.Barbarian) hit_mob = 'barbarian';
+      else if (e._type === TileType.Bowman) hit_mob = 'bowman';
+      else if (e._type === TileType.Wizard) hit_mob = 'wizard';
+      console.log('set_hit_mob', hit_mob);
+      set_hit_mob(hit_mob);
+    }
+    //console.log(e._type);
     setComponent(e.component, e.entityIndex, e.componentValues);
     //if (e._type === TileType.Knight) await sleep(3000);
-    await sleep(500);
+    await sleep(700);
+    updateComponent(e.component, e.entityIndex, { hitter: 0 });
   }
 
   await sleep(1000);
