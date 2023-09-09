@@ -15,14 +15,9 @@ const Leaderboard = () => {
     .map((player) => ({ player, score: playerScores[player] }))
     .sort((a, b) => b.score - a.score);
 
-  console.log('sortedPlayers', sortedPlayers);
-
   // Split the players into two columns
   const leftPlayers = sortedPlayers.slice(0, 10);
   const rightPlayers = sortedPlayers.slice(10);
-
-  console.log(leftPlayers);
-  console.log(rightPlayers);
 
   return (
     <>

@@ -5,7 +5,7 @@ import sword from '../assets/sword_right.png';
 
 interface SwordProps {
   initialY?: number;
-  targetY: number; // Added targetY prop
+  targetY: number;
 }
 
 const Sword: React.FC<SwordProps> = ({ initialY = 59, targetY }) => {

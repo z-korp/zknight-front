@@ -48,17 +48,19 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   const [level, setLevel] = useState<number>(0);
   const [grid, setGrid] = useState<GridElement[][]>([]);
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
-  const [selectedTile, setSelectedTile] = useState<Coordinate | undefined>(undefined);
-  const [selectedMob, setSelectedMob] = useState<MobType | undefined>(undefined);
+  const [hoveredMob, setHoveredMob] = useState<MobType | undefined>(undefined);
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [hasPlayed, setHasPlayed] = useState(false);
 
   const { map, turn, add_hole, set_size, reset_holes, set_ip, add_to_leaderboard, set_hit_mob, set_turn } =
     useElementStore((state) => state);
 
   useEffect(() => {
-    console.log('hitPosition', hitPosition);
-  }, [hitPosition]);
+    if (turn === TileType.Knight) {
+      setHasPlayed(false);
+    }
+  }, [turn]);
 
   const [pseudo, setPseudo] = useState('');
   const { ip, loading, error } = useIP();
@@ -111,7 +113,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
     }
   }, [mapState.spawn]);
 
-  const { getActionableTiles } = useGrid(grid);
+  const { knightNeighbors, barbarianNeighbors, bowmanNeighbors, wizardNeighbors } = useGrid(grid);
 
   const passTurn = () => {
     // pass turn is a play but with same position
@@ -121,8 +123,6 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
   PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-
-  const [targetY, setTargetY] = useState(59);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -138,40 +138,35 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
           const tileX = Math.round(gridPos.x);
           const tileY = Math.round(gridPos.y);
 
-          setHoveredTile({ x: tileX, y: tileY });
-          setAbsolutePosition({
-            x: e.nativeEvent.offsetX,
-            y: e.nativeEvent.offsetY,
-          });
+          const tileCoords = { x: tileX, y: tileY };
+          if (hoveredTile === undefined || !areCoordsEqual(hoveredTile, tileCoords)) {
+            setHoveredTile(tileCoords);
+            setAbsolutePosition({
+              x: e.nativeEvent.offsetX,
+              y: e.nativeEvent.offsetY,
+            });
+          }
         }}
         onPointerDown={(e) => {
-          console.log('Click on map');
-          const gridPos = to_grid_coordinate({
-            x: e.nativeEvent.offsetX - WIDTH / 2,
-            y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
-          });
-          const tileX = Math.round(gridPos.x);
-          const tileY = Math.round(gridPos.y);
+          if (!hasPlayed) {
+            console.log('Click on map');
+            const gridPos = to_grid_coordinate({
+              x: e.nativeEvent.offsetX - WIDTH / 2,
+              y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
+            });
+            const tileX = Math.round(gridPos.x);
+            const tileY = Math.round(gridPos.y);
 
-          if (tileX >= 0 && tileY >= 0) {
-            if (barbarian.position && areCoordsEqual({ x: tileX, y: tileY }, barbarian.position))
-              setSelectedMob('barbarian');
-            else if (knight.position && areCoordsEqual({ x: tileX, y: tileY }, knight.position))
-              setSelectedMob('knight');
-            else if (wizard.position && areCoordsEqual({ x: tileX, y: tileY }, wizard.position))
-              setSelectedMob('wizard');
-            else if (bowman.position && areCoordsEqual({ x: tileX, y: tileY }, bowman.position))
-              setSelectedMob('bowman');
+            if (knight.position) {
+              const result = getNeighbors({ x: knight.position.x, y: knight.position.y }, grid);
 
-            setSelectedTile({ x: tileX, y: tileY });
-          }
-          if (knight.position) {
-            const result = getNeighbors({ x: knight.position.x, y: knight.position.y }, grid);
-
-            //verify if the tile is in the result
-            const tile = result.find((e) => e.x === tileX && e.y === tileY);
-            if (tile) {
-              play(account, ip, tileX, tileY, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
+              //verify if the tile is in the result
+              const tile = result.find((e) => e.x === tileX && e.y === tileY);
+              if (tile) {
+                console.log('--------- play');
+                setHasPlayed(true);
+                play(account, ip, tileX, tileY, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
+              }
             }
           }
         }}
@@ -182,62 +177,52 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
           {knight.position && knight.health !== undefined && (
             <Mob
               type="knight"
-              grid={grid}
               targetPosition={knight.position}
-              selectedTile={selectedTile}
-              hoveredTile={hoveredTile}
-              isSelected={selectedMob !== undefined && selectedMob === 'knight'}
-              getActionableTiles={getActionableTiles}
+              isHovered={
+                turn === TileType.Knight || (hoveredTile !== undefined && areCoordsEqual(hoveredTile, knight.position))
+              }
               health={knight.health}
               isHitter={hitter === TileType.Knight}
               knightPosition={knight.position}
               hitPosition={hitPosition}
+              neighbors={knightNeighbors}
             />
           )}
 
           {barbarian.position && barbarian.health !== undefined && (
             <Mob
               type="barbarian"
-              grid={grid}
               targetPosition={barbarian.position}
-              selectedTile={selectedTile}
-              hoveredTile={hoveredTile}
-              isSelected={selectedMob !== undefined && selectedMob === 'barbarian'}
-              getActionableTiles={getActionableTiles}
+              isHovered={hoveredTile !== undefined && areCoordsEqual(hoveredTile, barbarian.position)}
               health={barbarian.health}
               isHitter={hitter === TileType.Barbarian}
               knightPosition={knight.position}
               hitPosition={hitPosition}
+              neighbors={barbarianNeighbors}
             />
           )}
           {bowman.position && bowman.health !== undefined && (
             <Mob
               type="bowman"
-              grid={grid}
               targetPosition={bowman.position}
-              selectedTile={selectedTile}
-              hoveredTile={hoveredTile}
-              isSelected={selectedMob !== undefined && selectedMob === 'bowman'}
-              getActionableTiles={getActionableTiles}
+              isHovered={hoveredTile !== undefined && areCoordsEqual(hoveredTile, bowman.position)}
               health={bowman.health}
               isHitter={hitter === TileType.Bowman}
               knightPosition={knight.position}
               hitPosition={hitPosition}
+              neighbors={bowmanNeighbors}
             />
           )}
           {wizard.position && wizard.health !== undefined && (
             <Mob
               type="wizard"
-              grid={grid}
               targetPosition={wizard.position}
-              selectedTile={selectedTile}
-              hoveredTile={hoveredTile}
-              isSelected={selectedMob !== undefined && selectedMob === 'wizard'}
-              getActionableTiles={getActionableTiles}
+              isHovered={hoveredTile !== undefined && areCoordsEqual(hoveredTile, wizard.position)}
               health={wizard.health}
               isHitter={hitter === TileType.Wizard}
               knightPosition={knight.position}
               hitPosition={hitPosition}
+              neighbors={wizardNeighbors}
             />
           )}
 

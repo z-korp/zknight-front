@@ -2,7 +2,7 @@ import { AnimatedSprite, useTick } from '@pixi/react';
 import { Assets, SCALE_MODES, Texture } from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { ActionableTile } from '../hooks/useGrid';
-import { Coordinate, GridElement } from '../type/GridElement';
+import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import TileMarker from './TileMarker';
 
@@ -10,16 +10,13 @@ export type MobType = 'bowman' | 'barbarian' | 'knight' | 'wizard';
 
 interface MobProps {
   type: MobType;
-  grid: GridElement[][];
   targetPosition: Coordinate;
-  selectedTile?: { x: number; y: number };
-  hoveredTile?: { x: number; y: number };
-  isSelected: boolean;
-  getActionableTiles: (type: MobType) => ActionableTile[];
+  isHovered: boolean;
   health: number;
   isHitter: boolean;
   knightPosition?: Coordinate;
   hitPosition?: Coordinate;
+  neighbors?: ActionableTile[];
 }
 
 enum Animation {
@@ -136,16 +133,13 @@ const getStartOrientation = (mob_coord: Coordinate, knight_position?: Coordinate
 
 const Mob: React.FC<MobProps> = ({
   type,
-  grid,
   targetPosition,
-  selectedTile,
-  hoveredTile,
-  isSelected,
-  getActionableTiles,
+  isHovered,
   health,
   isHitter,
   knightPosition,
   hitPosition,
+  neighbors,
 }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [counterAnim, setCounterAnim] = useState(0);
@@ -153,7 +147,6 @@ const Mob: React.FC<MobProps> = ({
   const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
-  const [neighbors, setNeighbors] = useState<ActionableTile[]>([]);
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const [isMoving, setIsMoving] = useState(false);
@@ -201,6 +194,7 @@ const Mob: React.FC<MobProps> = ({
         setAnimation(Animation.Hurt);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [health]);
 
   useEffect(() => {
@@ -211,10 +205,8 @@ const Mob: React.FC<MobProps> = ({
 
   useEffect(() => {
     if (isHitter === true) {
-      //console.log(type, 'isHitter changed and is true');
       setCurrentFrame(0);
 
-      //console.log('hitPosition', hitPosition);
       if (hitPosition !== undefined) {
         const new_orientation = hitPosition ? getDirection(targetPosition, hitPosition, orientation) : orientation;
         setOrientation(new_orientation);
@@ -223,9 +215,8 @@ const Mob: React.FC<MobProps> = ({
         else if (type === 'bowman') setAnimation(Animation.BowAttack);
         else if (type === 'wizard') setAnimation(Animation.StaffAttack);
       }
-    } else {
-      //console.log(type, 'isHitter changed and is false');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHitter]);
 
   // current position absolute during movement
@@ -307,34 +298,6 @@ const Mob: React.FC<MobProps> = ({
     }
   });
 
-  const [isSelected2, setIsSelected] = useState(false);
-
-  useEffect(() => {
-    if (selectedTile) {
-      if (selectedTile.x === targetPosition.x && selectedTile.y === targetPosition.y) setIsSelected(true);
-      else setIsSelected(false);
-    } else {
-      setIsSelected(false);
-    }
-  }, [selectedTile, targetPosition]);
-
-  const [isHovered, setIsHovered] = useState(false);
-  useEffect(() => {
-    if (hoveredTile) {
-      if (hoveredTile.x === targetPosition.x && hoveredTile.y === targetPosition.y) setIsHovered(true);
-      else setIsHovered(false);
-    } else {
-      setIsHovered(false);
-    }
-  }, [hoveredTile, targetPosition]);
-
-  useEffect(() => {
-    if (grid.length === 0) return;
-
-    const result = getActionableTiles(type);
-    setNeighbors(result);
-  }, [grid, targetPosition]);
-
   if (frames.length === 0) {
     return null;
   }
@@ -352,16 +315,10 @@ const Mob: React.FC<MobProps> = ({
         initialFrame={currentFrame}
       />
 
-      {type === 'knight' &&
-        !isMoving &&
+      {!isMoving &&
         isHovered &&
-        neighbors.map((move, index) => (
-          <TileMarker key={index} x={move.tile.x} y={move.tile.y} color={move.action === 'walk' ? 'blue' : 'yellow'} />
-        ))}
-
-      {type !== 'knight' &&
-        !isMoving &&
-        isHovered &&
+        health !== 0 &&
+        neighbors &&
         neighbors.map((move, index) => (
           <TileMarker key={index} x={move.tile.x} y={move.tile.y} color={move.action === 'walk' ? 'blue' : 'yellow'} />
         ))}
