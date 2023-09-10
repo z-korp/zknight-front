@@ -1,9 +1,10 @@
 import { useComponentValue } from '@dojoengine/react';
 import { EntityIndex } from '@latticexyz/recs';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDojo } from '../DojoContext';
 import { getEntityIdFromKeys } from '../dojo/createSystemCalls';
 import { Coordinate } from '../type/GridElement';
+import { MobType } from '../ui/Mob';
 import { useElementStore } from '../utils/store';
 
 export enum TileType {
@@ -42,6 +43,22 @@ const getHitter = (
   return 0;
 };
 
+const getHitPosition = (
+  hitMob: MobType | undefined,
+  knight_position: Coordinate | undefined,
+  barbarian_position: Coordinate | undefined,
+  wizard_position: Coordinate | undefined,
+  bowman_position: Coordinate | undefined
+): Coordinate | undefined => {
+  if (hitMob === undefined) return undefined;
+  else if (hitMob === 'knight' && knight_position) return knight_position;
+  else if (hitMob === 'barbarian' && barbarian_position) return barbarian_position;
+  else if (hitMob === 'wizard' && wizard_position) return wizard_position;
+  else if (hitMob === 'bowman' && bowman_position) return bowman_position;
+
+  return undefined;
+};
+
 export const useComponentStates = () => {
   const {
     setup: {
@@ -49,10 +66,17 @@ export const useComponentStates = () => {
     },
   } = useDojo();
 
-  const { ip } = useElementStore((state) => state);
+  const { ip, hit_mob } = useElementStore((state) => state);
 
   const entityId = ip as EntityIndex;
   const game = useComponentValue(Game, entityId);
+
+  const [hitPosition, setHitPosition] = useState<Coordinate | undefined>(undefined);
+
+  useEffect(() => {
+    const a = getHitPosition(hit_mob, knight_position, barbarian_position, wizard_position, bowman_position);
+    setHitPosition(a);
+  }, [hit_mob]);
 
   useEffect(() => {
     console.log('game', game);
@@ -77,10 +101,6 @@ export const useComponentStates = () => {
       BigInt(knight?.index),
     ]);
   const knight_position = useComponentValue(Tile, entityId3);
-
-  useEffect(() => {
-    console.log(knight);
-  }, [knight]);
 
   // ===================================================================================================================
   // BARBARIAN
@@ -137,10 +157,6 @@ export const useComponentStates = () => {
     ]);
   const wizard_position = useComponentValue(Tile, entityId6);
 
-  //const [pos, setPost] = useState({ x: 4, y: 4 });
-
-  //console.log(knight_position, barbarian_position, bowman_position, wizard_position);
-
   return {
     game: { id: game?.game_id, over: game?.over, seed: game?.seed },
     map: { level: map?.level, size: map?.size, spawn: map?.spawn, score: map?.score, over: map?.over, name: map?.name },
@@ -149,6 +165,6 @@ export const useComponentStates = () => {
     bowman: createMob('bowman', bowman?.health, bowman_position, bowman?.hitter, bowman?.hit),
     wizard: createMob('wizard', wizard?.health, wizard_position, wizard?.hitter, wizard?.hit),
     hitter: getHitter(knight, barbarian, wizard, bowman),
-    //moveWizard: (x: number, y: number) => setPost({ x, y }),
+    hitPosition,
   };
 };
