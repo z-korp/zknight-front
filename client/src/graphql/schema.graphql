@@ -35,7 +35,7 @@ query getEntities {
 }
 
 query getFinishedGames {
-  gameComponents {
+  gameComponents(first: 10000) {
     edges {
       node {
         game_id
@@ -48,7 +48,7 @@ query getFinishedGames {
 }
 
 query getFinishedMaps {
-  mapComponents {
+  mapComponents(first: 10000) {
     edges {
       node {
         score

@@ -24,7 +24,7 @@ const Leaderboard = () => {
       <h1 className="text-black mb-4 text-center">Leaderboard</h1>
       <hr className="my-4 border-2" />
       <div className="flex justify-center">
-        <div className="flex flex-col items-center justify-between w-1/2">
+        <div className="flex flex-col items-center justify-start w-1/2">
           {leftPlayers.map((entry, index) => (
             <div key={index} className="flex justify-around w-full py-2 text-black">
               <span className="w-10 text-right">{index + 1}.</span>
@@ -34,7 +34,7 @@ const Leaderboard = () => {
           ))}
         </div>
         <div className="my-4 border-l-2 mx-2 h-full"></div> {/* This is the vertical divider */}
-        <div className="flex flex-col items-center justify-between w-1/2">
+        <div className="flex flex-col items-center justify-start w-1/2">
           {rightPlayers.map((entry, index) => (
             <div key={index + 10} className="flex justify-around w-full py-2 text-black">
               <span className="w-10 text-right">{index + 11}.</span>
