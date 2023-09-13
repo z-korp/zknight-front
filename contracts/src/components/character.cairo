@@ -22,6 +22,7 @@ trait CharacterTrait {
     fn get_bowman_type() -> u8;
     fn get_wizard_type() -> u8;
     fn is_dead(self: Character) -> bool;
+    fn take_damage(ref self: Character, hitter: u8, damage: u8);
 }
 
 impl CharacterImpl of CharacterTrait {
@@ -41,6 +42,12 @@ impl CharacterImpl of CharacterTrait {
     fn get_wizard_type() -> u8 { WIZARD_TYPE }
     fn is_dead(self: Character) -> bool {
         self.health == 0
+    }
+    fn take_damage(ref self: Character, hitter: u8, damage: u8) {
+        let real_damage = if damage > self.health { self.health } else { damage };
+        self.hitter = hitter;
+        self.hit = real_damage;
+        self.health -= real_damage;
     }
 }
 
