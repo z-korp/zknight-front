@@ -17,7 +17,7 @@ const Leaderboard = () => {
 
   // Split the players into two columns
   const leftPlayers = sortedPlayers.slice(0, 10);
-  const rightPlayers = sortedPlayers.slice(10);
+  const rightPlayers = sortedPlayers.slice(10, 20);
 
   return (
     <>
