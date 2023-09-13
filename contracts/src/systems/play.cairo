@@ -132,15 +132,18 @@ mod Play {
                 }
                 let hit_index = *hits.at(i);
                 let mut hit_tile = tiles.get(hit_index.into()).deref();
-                if hit_tile.is_character() {
-                    // [Command] Character entity
-                    let mut char = get!(ctx.world, (game.game_id, hit_tile._type), (Character));
+                if hit_tile.is_knight() {
                     // [Command] Update Character
-                    let damage = if BARBARIAN_DAMAGE > char.health { char.health } else { BARBARIAN_DAMAGE };
-                    char.health -= damage;
-                    char.hitter = barbarian_char._type;
-                    char.hit = damage;
-                    set!(ctx.world, (char));
+                    knight_char.take_damage(barbarian_char._type, BARBARIAN_DAMAGE);
+                    set!(ctx.world, (knight_char));
+                } else if hit_tile.is_bowman() && bowman_char.health > 0 {
+                    // [Command] Update Character
+                    bowman_char.take_damage(barbarian_char._type, BARBARIAN_DAMAGE);
+                    set!(ctx.world, (bowman_char));
+                } else if hit_tile.is_wizard() && wizard_char.health > 0 {
+                    // [Command] Update Character
+                    wizard_char.take_damage(barbarian_char._type, BARBARIAN_DAMAGE);
+                    set!(ctx.world, (wizard_char));
                 };
                 i += 1;
             };
@@ -175,15 +178,22 @@ mod Play {
                 }
                 let hit_index = *hits.at(i);
                 let mut hit_tile = tiles.get(hit_index.into()).deref();
-                if hit_tile.is_character() {
-                    // [Command] Character entity
-                    let mut char = get!(ctx.world, (game.game_id, hit_tile._type), (Character));
+                if hit_tile.is_knight() {
                     // [Command] Update Character
-                    let damage = if BOWMAN_DAMAGE > char.health { char.health } else { BOWMAN_DAMAGE };
-                    char.health -= damage;
-                    char.hitter = bowman_char._type;
-                    char.hit = damage;
-                    set!(ctx.world, (char));
+                    knight_char.take_damage(bowman_char._type, BOWMAN_DAMAGE);
+                    set!(ctx.world, (knight_char));
+                    // [Break] Hits stop at the first character
+                    break;
+                } else if hit_tile.is_barbarian() && barbarian_char.health > 0 {
+                    // [Command] Update Character
+                    barbarian_char.take_damage(bowman_char._type, BOWMAN_DAMAGE);
+                    set!(ctx.world, (barbarian_char));
+                    // [Break] Hits stop at the first character
+                    break;
+                } else if hit_tile.is_wizard() && wizard_char.health > 0 {
+                    // [Command] Update Character
+                    wizard_char.take_damage(bowman_char._type, BOWMAN_DAMAGE);
+                    set!(ctx.world, (wizard_char));
                     // [Break] Hits stop at the first character
                     break;
                 };
@@ -220,15 +230,18 @@ mod Play {
                 }
                 let hit_index = *hits.at(i);
                 let mut hit_tile = tiles.get(hit_index.into()).deref();
-                if hit_tile.is_character() {
-                    // [Command] Character entity
-                    let mut char = get!(ctx.world, (game.game_id, hit_tile._type), (Character));
+                if hit_tile.is_knight() {
                     // [Command] Update Character
-                    let damage = if WIZARD_DAMAGE > char.health { char.health } else { WIZARD_DAMAGE };
-                    char.health -= damage;
-                    char.hitter = wizard_char._type;
-                    char.hit = damage;
-                    set!(ctx.world, (char));
+                    knight_char.take_damage(wizard_char._type, WIZARD_DAMAGE);
+                    set!(ctx.world, (knight_char));
+                } else if hit_tile.is_barbarian() && barbarian_char.health > 0 {
+                    // [Command] Update Character
+                    barbarian_char.take_damage(wizard_char._type, WIZARD_DAMAGE);
+                    set!(ctx.world, (barbarian_char));
+                } else if hit_tile.is_bowman() && bowman_char.health > 0 {
+                    // [Command] Update Character
+                    bowman_char.take_damage(wizard_char._type, WIZARD_DAMAGE);
+                    set!(ctx.world, (bowman_char));
                 };
                 i += 1;
             };
