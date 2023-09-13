@@ -7,6 +7,8 @@ on:
 jobs:
   sozo-test:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./contracts
     steps:
     - uses: actions/checkout@v3
     - run: curl -L https://install.dojoengine.org | bash
