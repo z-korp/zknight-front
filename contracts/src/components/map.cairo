@@ -6,7 +6,9 @@ use poseidon::poseidon_hash_span;
 use alexandria_data_structures::array_ext::SpanTraitExt;
 
 use zknight::components::tile::{Tile, TileTrait};
-use zknight::constants::{NAME, SIZE, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
+use zknight::constants::{
+    NAME, SIZE, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE
+};
 
 const MULTIPLIER: u128 = 10000;
 
@@ -46,7 +48,15 @@ trait MapTrait {
 
 impl MapImpl of MapTrait {
     fn new(game_id: u32, level: u32, name: felt252) -> Map {
-        Map { game_id: game_id, level: level, size: SIZE, spawn: true, score: 0, over: false, name: name }
+        Map {
+            game_id: game_id,
+            level: level,
+            size: SIZE,
+            spawn: true,
+            score: 0,
+            over: false,
+            name: name
+        }
     }
 
     fn compose(self: Map, x: u32, y: u32) -> u32 {
@@ -58,8 +68,12 @@ impl MapImpl of MapTrait {
     }
 
     fn generate(self: Map, seed: felt252) -> Span<u8> {
-        let seeds: Array<felt252> = array![seed + 'hole', seed + 'knight', seed + 'barbarian', seed + 'bowman', seed + 'wizard'];
-        let _types: Array<u8> = array![HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE];
+        let seeds: Array<felt252> = array![
+            seed + 'hole', seed + 'knight', seed + 'barbarian', seed + 'bowman', seed + 'wizard'
+        ];
+        let _types: Array<u8> = array![
+            HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE
+        ];
         let numbers: Array<u32> = array![self.size, 1_u32, 1_u32, 1_u32, 1_u32];
         _generate(seeds.span(), numbers.span(), _types.span(), self.size * self.size)
     }
@@ -102,7 +116,7 @@ fn _decompose(index: u32, size: u32) -> (u32, u32) {
 }
 
 fn _dict_to_span(mut dict: Felt252Dict<u8>, length: u32) -> Span<u8> {
-    let mut array : Array<u8> = array![];
+    let mut array: Array<u8> = array![];
     let mut index = 0;
     loop {
         if index == length {
@@ -119,7 +133,7 @@ fn _generate(seeds: Span<felt252>, numbers: Span<u32>, types: Span<u8>, n_tiles:
     assert(seeds.len() == numbers.len(), 'span lengths mismatch');
 
     // [Compute] Types
-    let mut dict_types : Felt252Dict<u8> = Default::default();
+    let mut dict_types: Felt252Dict<u8> = Default::default();
     let mut index = 0;
     let length = seeds.len();
     loop {
@@ -137,7 +151,9 @@ fn _generate(seeds: Span<felt252>, numbers: Span<u32>, types: Span<u8>, n_tiles:
     _dict_to_span(dict_types, n_tiles)
 }
 
-fn __generate(seed: felt252, n_objects: u32, _type: u8, n_tiles: u32, ref dict_types: Felt252Dict<u8>) {
+fn __generate(
+    seed: felt252, n_objects: u32, _type: u8, n_tiles: u32, ref dict_types: Felt252Dict<u8>
+) {
     // [Check] Too many objects
     assert(n_objects < n_tiles, 'too many objects');
 
@@ -159,7 +175,9 @@ fn __generate(seed: felt252, n_objects: u32, _type: u8, n_tiles: u32, ref dict_t
         }
         // [Compute] Uniform random number between 0 and MULTIPLIER
         let rand = _uniform_random(seed + iter.into(), MULTIPLIER);
-        let tile_object_probability: u128 = objects_to_place.into() * MULTIPLIER / (n_tiles - iter).into();
+        let tile_object_probability: u128 = objects_to_place.into()
+            * MULTIPLIER
+            / (n_tiles - iter).into();
         if rand <= tile_object_probability {
             objects_to_place -= 1;
             dict_types.insert(iter.into(), _type);
@@ -185,14 +203,18 @@ mod tests {
     #[test]
     #[available_gas(10_000_000)]
     fn test_map_get_type() {
-        let map = Map { game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test' };
+        let map = Map {
+            game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test'
+        };
         assert(map.get_type(0) == Type::Ground(()), 'wrong type');
     }
 
     #[test]
     #[available_gas(10_000_000)]
     fn test_map_get_raw_type() {
-        let map = Map { game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test' };
+        let map = Map {
+            game_id: 0, level: 0, size: 3, spawn: true, score: 0, over: false, name: 'test'
+        };
         assert(map.get_raw_type(Type::Ground(())) == 0, 'wrong raw type');
     }
 }

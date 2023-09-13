@@ -34,12 +34,11 @@ mod Create {
             let raw_type = *raw_types[index];
             let tile_type = map.get_type(raw_type);
             let (x, y) = map.decompose(index);
-            let tile = Tile { game_id, level: map.level, x, y, index, _type: raw_type};
+            let tile = Tile { game_id, level: map.level, x, y, index, _type: raw_type };
 
             // [Command] Set Tile and Character entities
             match tile_type {
-                Type::Ground(()) => {
-                    //
+                Type::Ground(()) => {//
                 },
                 Type::Hole(()) => {
                     // [Command] Set Tile entity
@@ -49,33 +48,61 @@ mod Create {
                     // [Command] Set Tile entity
                     set!(ctx.world, (tile));
                     // [Command] Set Character entity
-                    let knight = Character{ game_id: game_id, _type: raw_type, health: KNIGHT_HEALTH, index, hitter: 0, hit: 0};
+                    let knight = Character {
+                        game_id: game_id,
+                        _type: raw_type,
+                        health: KNIGHT_HEALTH,
+                        index,
+                        hitter: 0,
+                        hit: 0
+                    };
                     set!(ctx.world, (knight));
                 },
                 Type::Barbarian(()) => {
                     // [Command] Set Tile entity
                     set!(ctx.world, (tile));
                     // [Command] Set Character entity
-                    let barbarian = Character{ game_id: game_id, _type: raw_type, health: MOB_HEALTH, index, hitter: 0, hit: 0};
+                    let barbarian = Character {
+                        game_id: game_id,
+                        _type: raw_type,
+                        health: MOB_HEALTH,
+                        index,
+                        hitter: 0,
+                        hit: 0
+                    };
                     set!(ctx.world, (barbarian));
                 },
                 Type::Bowman(()) => {
                     // [Command] Set Tile entity
                     set!(ctx.world, (tile));
                     // [Command] Set Character entity
-                    let bowman = Character{ game_id: game_id, _type: raw_type, health: MOB_HEALTH, index, hitter: 0, hit: 0};
+                    let bowman = Character {
+                        game_id: game_id,
+                        _type: raw_type,
+                        health: MOB_HEALTH,
+                        index,
+                        hitter: 0,
+                        hit: 0
+                    };
                     set!(ctx.world, (bowman));
                 },
                 Type::Wizard(()) => {
                     // [Command] Set Tile entity
                     set!(ctx.world, (tile));
                     // [Command] Set Character entity
-                    let wizard = Character{ game_id: game_id, _type: raw_type, health: MOB_HEALTH, index, hitter: 0, hit: 0};
+                    let wizard = Character {
+                        game_id: game_id,
+                        _type: raw_type,
+                        health: MOB_HEALTH,
+                        index,
+                        hitter: 0,
+                        hit: 0
+                    };
                     set!(ctx.world, (wizard));
                 },
             };
 
-            index +=1;
+            index += 1;
         }
     }
 }

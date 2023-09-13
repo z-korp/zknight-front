@@ -13,7 +13,7 @@ struct Barbarian {
     health: u8,
 }
 
-impl BarbarianImpl of FoeTrait::<Barbarian> {
+impl BarbarianImpl of FoeTrait<Barbarian> {
     #[inline(always)]
     fn new(health: u8, _type: u8) -> Barbarian {
         Barbarian { health: health }
@@ -45,7 +45,9 @@ impl BarbarianImpl of FoeTrait::<Barbarian> {
     }
 
     #[inline(always)]
-    fn next(self: Barbarian, tile: Tile, target: Tile, size: u32, ref tiles: Felt252Dict<Nullable<Tile>>) -> u32 {
+    fn next(
+        self: Barbarian, tile: Tile, target: Tile, size: u32, ref tiles: Felt252Dict<Nullable<Tile>>
+    ) -> u32 {
         // [Compute] Current tile score
         let mut result = tile;
         let mut score = self.compute_score(tile, target);
@@ -120,7 +122,7 @@ mod tests {
     const SIZE: u32 = 8;
 
     fn setup() -> Felt252Dict<Nullable<Tile>> {
-        let mut tiles : Felt252Dict<Nullable<Tile>> = Default::default();
+        let mut tiles: Felt252Dict<Nullable<Tile>> = Default::default();
         let tile = Tile { game_id: 0, level: 0, index: 2 + SIZE * 1, _type: 0, x: 2, y: 1 };
         tiles.insert(tile.index.into(), nullable_from_box(BoxTrait::new(tile)));
         let tile = Tile { game_id: 0, level: 0, index: 3 + SIZE * 1, _type: 0, x: 3, y: 1 };
@@ -147,7 +149,7 @@ mod tests {
     fn test_barbarian_compute_score_close() {
         let mut tiles = setup();
         let char = CharacterTrait::new(0);
-        let barbarian : Barbarian = FoeTrait::new(char.health, char._type);
+        let barbarian: Barbarian = FoeTrait::new(char.health, char._type);
         let tile = Tile { game_id: 0, level: 0, index: 3 + SIZE * 2, _type: 0, x: 3, y: 2 };
         let target = TileTrait::new(2, 1);
         let result = barbarian.next(tile, target, SIZE, ref tiles);
@@ -160,7 +162,7 @@ mod tests {
     fn test_barbarian_compute_score_near() {
         let mut tiles = setup();
         let char = CharacterTrait::new(0);
-        let barbarian : Barbarian = FoeTrait::new(char.health, char._type);
+        let barbarian: Barbarian = FoeTrait::new(char.health, char._type);
         let tile = Tile { game_id: 0, level: 0, index: 3 + SIZE * 2, _type: 0, x: 3, y: 2 };
         let target = TileTrait::new(1, 1);
         let result = barbarian.next(tile, target, SIZE, ref tiles);
@@ -173,7 +175,7 @@ mod tests {
     fn test_barbarian_get_hits() {
         let mut tiles = setup();
         let char = CharacterTrait::new(1);
-        let barbarian : Barbarian = FoeTrait::new(char.health, char._type);
+        let barbarian: Barbarian = FoeTrait::new(char.health, char._type);
         let tile = Tile { game_id: 0, level: 0, index: 3 + SIZE * 2, _type: 0, x: 3, y: 2 };
         let target = Tile { game_id: 0, level: 0, index: 3 + SIZE * 1, _type: 0, x: 3, y: 1 };
         let hits = barbarian.get_hits(tile, target, SIZE);

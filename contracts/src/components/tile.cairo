@@ -1,6 +1,8 @@
 use array::{SpanTrait, ArrayTrait};
 
-use zknight::constants::{GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
+use zknight::constants::{
+    GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE
+};
 
 #[derive(Component, Copy, Drop, Serde, SerdeLen, Felt252Dict)]
 struct Tile {

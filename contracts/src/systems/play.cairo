@@ -7,7 +7,9 @@ mod Play {
 
     use dojo::world::{Context, IWorld};
 
-    use zknight::constants::{GROUND_TYPE, KNIGHT_DAMAGE, BARBARIAN_DAMAGE, BOWMAN_DAMAGE, WIZARD_DAMAGE};
+    use zknight::constants::{
+        GROUND_TYPE, KNIGHT_DAMAGE, BARBARIAN_DAMAGE, BOWMAN_DAMAGE, WIZARD_DAMAGE
+    };
     use zknight::components::game::Game;
     use zknight::components::map::{Map, MapTrait, Type};
     use zknight::components::tile::{Tile, TileTrait};
@@ -28,7 +30,7 @@ mod Play {
 
         // [Command] Tile entities
         let length = map.size * map.size;
-        let mut tiles : Felt252Dict<Nullable<Tile>> = Default::default();
+        let mut tiles: Felt252Dict<Nullable<Tile>> = Default::default();
         let mut index = 0;
         loop {
             if index == length {
@@ -36,7 +38,7 @@ mod Play {
             }
             let tile_key = (game.game_id, map.level, index);
             let mut tile = get!(ctx.world, tile_key.into(), (Tile));
-             // Could be unknown entity if GROUND_TYPE, then set coordinates
+            // Could be unknown entity if GROUND_TYPE, then set coordinates
             if tile._type == GROUND_TYPE {
                 let (tile_x, tile_y) = map.decompose(index);
                 tile.x = tile_x;
@@ -59,8 +61,7 @@ mod Play {
         assert(!new_tile.is_hole(), 'Target position is a hole');
 
         // [Effect] Pass if target is knight, Attack if the target is a foe, move otherwise
-        if new_tile.is_knight() {
-            // Pass
+        if new_tile.is_knight() {// Pass
         } else if new_tile.is_character() {
             // [Command] Character entity
             let mut foe_char = get!(ctx.world, (game.game_id, new_tile._type), (Character));
@@ -78,7 +79,14 @@ mod Play {
             }
         } else {
             // [Effect] Move Knight, update the knight position in storage and hashmap
-            let tile = Tile { game_id: game.game_id, level: map.level, index: new_index, _type: knight_char._type, x, y };
+            let tile = Tile {
+                game_id: game.game_id,
+                level: map.level,
+                index: new_index,
+                _type: knight_char._type,
+                x,
+                y
+            };
             tiles.insert(index.into(), nullable_from_box(BoxTrait::new(tile)));
             // [Command] Update previous tile
             knight_tile.set_ground_type();
@@ -88,12 +96,12 @@ mod Play {
             new_tile.set_knight_type();
             tiles.insert(new_tile.index.into(), nullable_from_box(BoxTrait::new(new_tile)));
             set!(ctx.world, (tile));
-            knight_tile = new_tile;  // Update knight tile for the next instructions
+            knight_tile = new_tile; // Update knight tile for the next instructions
             // [Command] Update Character
             knight_char.index = new_index;
             set!(ctx.world, (knight_char));
         }
-        
+
         // [Command] Barbarian entity
         let barbarian_key = (game.game_id, CharacterTrait::get_barbarian_type());
         let mut barbarian_char = get!(ctx.world, barbarian_key.into(), (Character));
@@ -162,13 +170,16 @@ mod Play {
             let mut new_tile = tiles.get(new_index.into()).deref();
             // [Command] Update previous tile
             barbarian_tile.set_ground_type();
-            tiles.insert(barbarian_tile.index.into(), nullable_from_box(BoxTrait::new(barbarian_tile)));
+            tiles
+                .insert(
+                    barbarian_tile.index.into(), nullable_from_box(BoxTrait::new(barbarian_tile))
+                );
             set!(ctx.world, (barbarian_tile));
             // [Command] Update new tile
             new_tile.set_barbarian_type();
             tiles.insert(new_tile.index.into(), nullable_from_box(BoxTrait::new(new_tile)));
             set!(ctx.world, (new_tile));
-            barbarian_tile = new_tile;  // Update knight tile for the next instructions
+            barbarian_tile = new_tile; // Update knight tile for the next instructions
             // [Command] Update Character
             barbarian_char.index = new_index;
             set!(ctx.world, (barbarian_char));
@@ -236,7 +247,7 @@ mod Play {
             new_tile.set_bowman_type();
             tiles.insert(new_tile.index.into(), nullable_from_box(BoxTrait::new(new_tile)));
             set!(ctx.world, (new_tile));
-            bowman_tile = new_tile;  // Update knight tile for the next instructions
+            bowman_tile = new_tile; // Update knight tile for the next instructions
             // [Command] Update Character
             bowman_char.index = new_index;
             set!(ctx.world, (bowman_char));
@@ -298,14 +309,18 @@ mod Play {
             new_tile.set_wizard_type();
             tiles.insert(new_tile.index.into(), nullable_from_box(BoxTrait::new(new_tile)));
             set!(ctx.world, (new_tile));
-            wizard_tile = new_tile;  // Update knight tile for the next instructions
+            wizard_tile = new_tile; // Update knight tile for the next instructions
             // [Command] Update Character
             wizard_char.index = new_index;
             set!(ctx.world, (wizard_char));
         }
 
         // [Effect] Score and game evalutation
-        map.score -= if map.score > 0 { 1 } else { 0 };
+        map.score -= if map.score > 0 {
+            1
+        } else {
+            0
+        };
         if knight_char.health == 0 {
             // [Command] Update Game
             game.over = true;

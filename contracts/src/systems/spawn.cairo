@@ -38,12 +38,13 @@ mod Spawn {
             let raw_type = *raw_types[index];
             let tile_type = map.get_type(raw_type);
             let (x, y) = map.decompose(index);
-            let tile = Tile { game_id: game.game_id, level: map.level, x, y, index, _type: raw_type};
+            let tile = Tile {
+                game_id: game.game_id, level: map.level, x, y, index, _type: raw_type
+            };
 
             // [Command] Set Tile and Character entities
             match tile_type {
-                Type::Ground(()) => {
-                    //
+                Type::Ground(()) => {//
                 },
                 Type::Hole(()) => {
                     // [Command] Set Tile entity
@@ -98,7 +99,7 @@ mod Spawn {
                 },
             };
 
-            index +=1;
+            index += 1;
         }
     }
 }
