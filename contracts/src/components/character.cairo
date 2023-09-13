@@ -22,6 +22,7 @@ trait CharacterTrait {
     fn get_bowman_type() -> u8;
     fn get_wizard_type() -> u8;
     fn is_dead(self: Character) -> bool;
+    fn set_index(ref self: Character, index: u32);
     fn take_damage(ref self: Character, hitter: u8, damage: u8);
     fn reset_damage(ref self: Character);
 }
@@ -44,6 +45,9 @@ impl CharacterImpl of CharacterTrait {
     }
     fn is_dead(self: Character) -> bool {
         self.health == 0
+    }
+    fn set_index(ref self: Character, index: u32) {
+        self.index = index;
     }
     fn take_damage(ref self: Character, hitter: u8, damage: u8) {
         let real_damage = if damage > self.health {

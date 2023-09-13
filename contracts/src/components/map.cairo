@@ -44,6 +44,11 @@ trait MapTrait {
     fn generate(self: Map, seed: felt252) -> Span<u8>;
     fn get_type(self: Map, raw_type: u8) -> Type;
     fn get_raw_type(self: Map, _type: Type) -> u8;
+    fn increase_score(ref self: Map, score: u8);
+    fn decrease_score(ref self: Map, score: u8);
+    fn set_over(ref self: Map, over: bool);
+    fn increase_level(ref self: Map);
+    fn set_spawn(ref self: Map, spawn: bool);
 }
 
 impl MapImpl of MapTrait {
@@ -102,6 +107,31 @@ impl MapImpl of MapTrait {
             Type::Bowman(()) => BOWMAN_TYPE,
             Type::Wizard(()) => WIZARD_TYPE,
         }
+    }
+
+    fn increase_score(ref self: Map, score: u8) {
+        self.score += score;
+    }
+
+    fn decrease_score(ref self: Map, score: u8) {
+        let remove: u8 = if self.score < score {
+            self.score
+        } else {
+            score
+        };
+        self.score -= remove;
+    }
+
+    fn set_over(ref self: Map, over: bool) {
+        self.over = true;
+    }
+
+    fn increase_level(ref self: Map) {
+        self.level += 1;
+    }
+
+    fn set_spawn(ref self: Map, spawn: bool) {
+        self.spawn = spawn;
     }
 }
 

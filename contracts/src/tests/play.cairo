@@ -188,7 +188,7 @@ mod Tests {
         let map = get!(world, game.game_id, (Map));
         assert(map.level == 2, 'Wrong map id');
         assert(map.spawn == false, 'Wrong spawn');
-        assert(map.score == 19, 'Wrong score');
+        assert(map.score == 29, 'Wrong score');
 
         // [Spawn]
         world.execute('Spawn', array![PLAYER]);
@@ -200,5 +200,41 @@ mod Tests {
         // [Assert] Barbarian Character
         let barbarian_char = get!(world, (game.game_id, BARBARIAN_TYPE).into(), (Character));
         assert(barbarian_char.health == MOB_HEALTH, 'Wrong barbarian health');
+    }
+
+    #[test]
+    #[available_gas(1_000_000_000)]
+    fn test_team_kill() {
+        // [Setup]
+        let world = Setup::spawn_game();
+
+        // [Create] Generate
+        let seed = 1000;
+        world.execute('Create', array![PLAYER, seed, NAME]);
+
+        // [Play] Move
+        let target_tile = TileTrait::new(6, 3);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(5, 3);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(5, 4);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Move
+        let target_tile = TileTrait::new(5, 5);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
+        // [Play] Pass
+        let target_tile = TileTrait::new(5, 5);
+        world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);
+
+        // [Assert] Barbarian Character
+        let game = get!(world, PLAYER, (Game));
+        let barbarian_char = get!(world, (game.game_id, BARBARIAN_TYPE).into(), (Character));
+        assert(barbarian_char.health == 0, 'Wrong barbarian health');
+
+        // [Assert] Map
+        let map = get!(world, game.game_id, (Map));
+        assert(map.score == 10, 'Wrong score');
     }
 }

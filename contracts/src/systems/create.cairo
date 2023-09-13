@@ -38,7 +38,7 @@ mod Create {
 
             // [Command] Set Tile and Character entities
             match tile_type {
-                Type::Ground(()) => {//
+                Type::Ground(()) => { //
                 },
                 Type::Hole(()) => {
                     // [Command] Set Tile entity
