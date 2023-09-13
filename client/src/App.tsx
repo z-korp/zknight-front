@@ -44,7 +44,7 @@ function App() {
 
   useEffect(() => {
     if (isMusicPlaying) {
-      //sound.play('my-sound');
+      sound.play('my-sound');
     } else {
       sound.stopAll();
     }

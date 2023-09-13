@@ -33,7 +33,7 @@ const Leaderboard = () => {
             </div>
           ))}
         </div>
-        <div className="my-4 border-l-2 mx-2 h-full"></div> {/* This is the vertical divider */}
+        <hr className="border-2 mx-4 h-[400px]"></hr> {/* This is the vertical divider */}
         <div className="flex flex-col items-center justify-start w-1/2">
           {rightPlayers.map((entry, index) => (
             <div key={index + 10} className="flex justify-around w-full py-2 text-black">
