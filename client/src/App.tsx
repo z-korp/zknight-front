@@ -67,7 +67,7 @@ function App() {
       top: '50%', // centré verticalement
       left: '50%', // centré horizontalement
       width: '80%', // Reduit la largeur
-      height: '60%', // Reduit la hauteur
+      height: '57%', // Reduit la hauteur
       right: 'auto',
       bottom: 'auto',
       marginRight: '-50%',
