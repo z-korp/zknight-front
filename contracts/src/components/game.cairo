@@ -15,11 +15,6 @@ trait GameTrait {
 
 impl GameImpl of GameTrait {
     fn new(player: felt252, game_id: u32, seed: felt252) -> Game {
-        Game {
-            player: player,
-            game_id: game_id,
-            over: false,
-            seed: seed,
-        }
+        Game { player: player, game_id: game_id, over: false, seed: seed, }
     }
 }

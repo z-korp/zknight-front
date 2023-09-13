@@ -13,7 +13,10 @@ mod Tests {
 
     use dojo::test_utils::spawn_test_world;
 
-    use zknight::constants::{SEED, NAME, PLAYER, KNIGHT_HEALTH, MOB_HEALTH, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE, BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE};
+    use zknight::constants::{
+        SEED, NAME, PLAYER, KNIGHT_HEALTH, MOB_HEALTH, GROUND_TYPE, HOLE_TYPE, KNIGHT_TYPE,
+        BARBARIAN_TYPE, BOWMAN_TYPE, WIZARD_TYPE
+    };
     use zknight::components::game::Game;
     use zknight::components::map::{Map, MapTrait, Type, _compose, _decompose};
     use zknight::components::tile::{Tile, TileTrait};
@@ -64,7 +67,9 @@ mod Tests {
         assert(barbarian_char.health == 0, 'Wrong barbarian health');
 
         // [Assert] Barbarian Tile doesn't exist anymore
-        let barbarian_tile = get!(world, (game.game_id, map.level, barbarian_char.index).into(), (Tile));
+        let barbarian_tile = get!(
+            world, (game.game_id, map.level, barbarian_char.index).into(), (Tile)
+        );
         assert(barbarian_tile._type == GROUND_TYPE, 'Wrong barbarian type');
 
         // [Assert] Bowman Character
@@ -138,7 +143,7 @@ mod Tests {
         // [Create] Generate
         let seed = 1000;
         world.execute('Create', array![PLAYER, seed, NAME]);
-        
+
         // [Play] Attack
         let target_tile = TileTrait::new(7, 2);
         world.execute('Play', array![PLAYER, target_tile.x.into(), target_tile.y.into()]);

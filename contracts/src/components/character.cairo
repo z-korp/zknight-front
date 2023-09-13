@@ -28,24 +28,29 @@ trait CharacterTrait {
 
 impl CharacterImpl of CharacterTrait {
     fn new(health: u8) -> Character {
-        Character {
-            game_id: 0,
-            _type: 0,
-            health: health,
-            index: 0,
-            hitter: 0,
-            hit: 0,
-        }
+        Character { game_id: 0, _type: 0, health: health, index: 0, hitter: 0, hit: 0, }
     }
-    fn get_knight_type() -> u8 { KNIGHT_TYPE }
-    fn get_barbarian_type() -> u8 { BARBARIAN_TYPE }
-    fn get_bowman_type() -> u8 { BOWMAN_TYPE }
-    fn get_wizard_type() -> u8 { WIZARD_TYPE }
+    fn get_knight_type() -> u8 {
+        KNIGHT_TYPE
+    }
+    fn get_barbarian_type() -> u8 {
+        BARBARIAN_TYPE
+    }
+    fn get_bowman_type() -> u8 {
+        BOWMAN_TYPE
+    }
+    fn get_wizard_type() -> u8 {
+        WIZARD_TYPE
+    }
     fn is_dead(self: Character) -> bool {
         self.health == 0
     }
     fn take_damage(ref self: Character, hitter: u8, damage: u8) {
-        let real_damage = if damage > self.health { self.health } else { damage };
+        let real_damage = if damage > self.health {
+            self.health
+        } else {
+            damage
+        };
         self.hitter = hitter;
         self.hit = real_damage;
         self.health -= real_damage;
