@@ -49,8 +49,7 @@ mod Play {
         // [Command] Knight entity
         let knight_key = (game.game_id, CharacterTrait::get_knight_type());
         let mut knight_char = get!(ctx.world, knight_key.into(), (Character));
-        knight_char.hitter = 0;
-        knight_char.hit = 0;
+        knight_char.reset_damage();
         let mut knight_tile = tiles.get(knight_char.index.into()).deref();
 
         // [Check] Target position is in range, target is not a hole
@@ -66,10 +65,7 @@ mod Play {
             // [Command] Character entity
             let mut foe_char = get!(ctx.world, (game.game_id, new_tile._type), (Character));
             // [Command] Update Character
-            let damage = if KNIGHT_DAMAGE > foe_char.health { foe_char.health } else { KNIGHT_DAMAGE };
-            foe_char.health -= damage;
-            foe_char.hitter = knight_char._type;
-            foe_char.hit = damage;
+            foe_char.take_damage(knight_char._type, KNIGHT_DAMAGE);
             set!(ctx.world, (foe_char));
 
             // [Check] Foe death
@@ -101,22 +97,19 @@ mod Play {
         // [Command] Barbarian entity
         let barbarian_key = (game.game_id, CharacterTrait::get_barbarian_type());
         let mut barbarian_char = get!(ctx.world, barbarian_key.into(), (Character));
-        barbarian_char.hitter = 0;
-        barbarian_char.hit = 0;
+        barbarian_char.reset_damage();
         let mut barbarian_tile = tiles.get(barbarian_char.index.into()).deref();
 
         // [Command] Bowman entity
         let bowman_key = (game.game_id, CharacterTrait::get_bowman_type());
         let mut bowman_char = get!(ctx.world, bowman_key.into(), (Character));
-        bowman_char.hitter = 0;
-        bowman_char.hit = 0;
+        bowman_char.reset_damage();
         let mut bowman_tile = tiles.get(bowman_char.index.into()).deref();
 
         // [Command] Wizard entity
         let wizard_key = (game.game_id, CharacterTrait::get_wizard_type());
         let mut wizard_char = get!(ctx.world, wizard_key.into(), (Character));
-        wizard_char.hitter = 0;
-        wizard_char.hit = 0;
+        wizard_char.reset_damage();
         let mut wizard_tile = tiles.get(wizard_char.index.into()).deref();
 
         // [Effect] Barbarian: Attack if possible, move otherwise
@@ -140,10 +133,26 @@ mod Play {
                     // [Command] Update Character
                     bowman_char.take_damage(barbarian_char._type, BARBARIAN_DAMAGE);
                     set!(ctx.world, (bowman_char));
+                    // [Check] Foe death
+                    if bowman_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                 } else if hit_tile.is_wizard() && wizard_char.health > 0 {
                     // [Command] Update Character
                     wizard_char.take_damage(barbarian_char._type, BARBARIAN_DAMAGE);
                     set!(ctx.world, (wizard_char));
+                    // [Check] Foe death
+                    if wizard_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                 };
                 i += 1;
             };
@@ -188,12 +197,28 @@ mod Play {
                     // [Command] Update Character
                     barbarian_char.take_damage(bowman_char._type, BOWMAN_DAMAGE);
                     set!(ctx.world, (barbarian_char));
+                    // [Check] Foe death
+                    if barbarian_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                     // [Break] Hits stop at the first character
                     break;
                 } else if hit_tile.is_wizard() && wizard_char.health > 0 {
                     // [Command] Update Character
                     wizard_char.take_damage(bowman_char._type, BOWMAN_DAMAGE);
                     set!(ctx.world, (wizard_char));
+                    // [Check] Foe death
+                    if wizard_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                     // [Break] Hits stop at the first character
                     break;
                 };
@@ -238,10 +263,26 @@ mod Play {
                     // [Command] Update Character
                     barbarian_char.take_damage(wizard_char._type, WIZARD_DAMAGE);
                     set!(ctx.world, (barbarian_char));
+                    // [Check] Foe death
+                    if barbarian_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                 } else if hit_tile.is_bowman() && bowman_char.health > 0 {
                     // [Command] Update Character
                     bowman_char.take_damage(wizard_char._type, WIZARD_DAMAGE);
                     set!(ctx.world, (bowman_char));
+                    // [Check] Foe death
+                    if bowman_char.health == 0 {
+                        // [Command] Update Tile
+                        hit_tile.set_ground_type();
+                        set!(ctx.world, (hit_tile));
+                        // [Effect] Update the map score
+                        map.score += 11;
+                    };
                 };
                 i += 1;
             };

@@ -23,6 +23,7 @@ trait CharacterTrait {
     fn get_wizard_type() -> u8;
     fn is_dead(self: Character) -> bool;
     fn take_damage(ref self: Character, hitter: u8, damage: u8);
+    fn reset_damage(ref self: Character);
 }
 
 impl CharacterImpl of CharacterTrait {
@@ -48,6 +49,10 @@ impl CharacterImpl of CharacterTrait {
         self.hitter = hitter;
         self.hit = real_damage;
         self.health -= real_damage;
+    }
+    fn reset_damage(ref self: Character) {
+        self.hitter = 0;
+        self.hit = 0;
     }
 }
 
