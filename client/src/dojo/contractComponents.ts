@@ -27,7 +27,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           game_id: RecsType.Number,
-          over: RecsType.Boolean,
+          over: RecsType.Number,
           seed: RecsType.Number,
         },
         {

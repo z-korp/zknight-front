@@ -1,13 +1,14 @@
 // GameOverModal.js
 import React from 'react';
 import Modal from 'react-modal';
+import { TwitterShareButton } from 'react-share';
 
 const modalStyle = {
   content: {
     top: '50%', // centré verticalement
     left: '50%', // centré horizontalement
     width: '80%', // Reduit la largeur
-    height: '40%', // Reduit la hauteur
+    height: '60%', // Reduit la hauteur
     right: 'auto',
     bottom: 'auto',
     marginRight: '-50%',
@@ -46,6 +47,14 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ score, isOpen, onClose })
         <div className="flex flex-col items-center justify-between mt-20">
           <h3 className="text-black">Score: {score}</h3>
           <h3 className="text-black mt-10">Click on 'new game' on the main screen to start over!</h3>
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            <TwitterShareButton
+              url="https://app.zknight.xyz/"
+              title={`🎉 I scored ${score} points in zKnight, the new onchain game on Starknet 🔥 Do you think you can beat me? @zkorp_`}
+            >
+              Share on Twitter
+            </TwitterShareButton>
+          </div>
         </div>
       </div>
     </Modal>
