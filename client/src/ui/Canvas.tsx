@@ -72,6 +72,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   }, [ip, loading]);
 
   const generateNewGame = async () => {
+    setScore(0);
     const storedIsMusicPlaying = localStorage.getItem('isMusicPlaying');
     if (storedIsMusicPlaying === null) {
       setMusicPlaying(true);
