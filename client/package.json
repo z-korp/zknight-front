@@ -31,6 +31,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
+    "react-share": "^4.4.1",
     "rxjs": "^7.8.1",
     "starknet": "^5.14.1",
     "tailwindcss": "^3.3.3",

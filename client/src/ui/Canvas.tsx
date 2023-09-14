@@ -86,7 +86,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   };
 
   useEffect(() => {
-    if (game.over === true) {
+    if (game.over === 1) {
       setIsGameOver(true);
     }
   }, [game.over]);
