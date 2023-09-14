@@ -11,23 +11,6 @@ import Leaderboard from './ui/Leaderboard';
 import { fetchData } from './utils/fetchData';
 import { useElementStore } from './utils/store';
 
-const gamesa = [
-  { stage: 1, score: 100, player: '0x123' },
-  { stage: 2, score: 90, player: '0x124' },
-  { stage: 3, score: 95, player: '0x125' },
-  { stage: 4, score: 110, player: '0x123' },
-  { stage: 5, score: 120, player: '0x126' },
-  { stage: 6, score: 85, player: '0x124' },
-  { stage: 7, score: 105, player: '0x127' },
-  { stage: 8, score: 80, player: '0x128' },
-  { stage: 9, score: 110, player: '0x129' },
-  { stage: 10, score: 70, player: '0x130' },
-  { stage: 11, score: 100, player: '0x131' },
-  { stage: 12, score: 60, player: '0x132' },
-  { stage: 13, score: 85, player: '0x133' },
-  { stage: 14, score: 75, player: '0x134' },
-];
-
 function App() {
   const {
     setup: {
@@ -44,14 +27,16 @@ function App() {
 
   useEffect(() => {
     if (isMusicPlaying) {
-      sound.play('my-sound');
+      sound.play('my-sound', { loop: true });
     } else {
       sound.stopAll();
     }
   }, [isMusicPlaying]);
 
   const toggleMusic = () => {
-    setMusicPlaying(!isMusicPlaying);
+    const newIsMusicPlaying = !isMusicPlaying;
+    localStorage.setItem('isMusicPlaying', JSON.stringify(newIsMusicPlaying));
+    setMusicPlaying(newIsMusicPlaying);
   };
 
   const toggleLeaderBoardModal = () => {

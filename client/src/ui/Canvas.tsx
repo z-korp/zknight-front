@@ -72,8 +72,12 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
   }, [ip, loading]);
 
   const generateNewGame = async () => {
-    setMusicPlaying(true);
-
+    const storedIsMusicPlaying = localStorage.getItem('isMusicPlaying');
+    if (storedIsMusicPlaying === null) {
+      setMusicPlaying(true);
+    } else {
+      setMusicPlaying(JSON.parse(storedIsMusicPlaying));
+    }
     reset_holes();
 
     const pseudoFelt = shortString.encodeShortString(pseudo);
