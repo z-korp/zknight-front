@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import NewGameButton from './NewGameButton';
+import Modal from 'react-modal';
+import RulesModal from './RulesModal';
 
 interface NewGameProps {
   onClick: () => void;
@@ -8,11 +10,16 @@ interface NewGameProps {
 
 const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
   const [username, setUsername] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setUsername(value);
     onPseudoChange(value); // Notify the parent of the change
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -33,6 +40,23 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
         maxLength={18} // Limit the input to 30 characters
       />
       <NewGameButton onClick={onClick} disabled={!username.trim()}></NewGameButton>
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+        onClick={toggleModal}
+      >
+        Rules
+      </button>
+      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={{ content: { height: '60%' } }}>
+        <div className="relative">
+          <button onClick={toggleModal} className="absolute top-[-10px] right-0 p-2">
+            <div className="relative w-6 h-6">
+              <div className="absolute inset-0 w-1 h-full bg-black transform rotate-45 origin-center"></div>
+              <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
+            </div>
+          </button>
+          <RulesModal />
+        </div>
+      </Modal>
     </div>
   );
 };
