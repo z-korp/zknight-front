@@ -46,7 +46,7 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
       >
         Rules
       </button>
-      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={{ content: { height: '60%' } }}>
+      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={{ content: { height: '70%' } }}>
         <div className="relative">
           <button onClick={toggleModal} className="absolute top-[-10px] right-0 p-2">
             <div className="relative w-6 h-6">
