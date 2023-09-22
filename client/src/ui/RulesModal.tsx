@@ -15,7 +15,9 @@ const RulesModal = () => {
           <img src={login} alt="login" className="w-50 h-32 mx-auto mt-2" style={{ imageRendering: 'pixelated' }} />
         </div>
         <div className="relative row-start-2 col-start-2 -mt-10 justify-center ">
-          <span className=" flex items-center text-center text-black font-bold text-lg ">You play this character</span>
+          <span className=" flex items-center text-center text-black font-bold text-lg ">
+            You play this character, click on blue tiles to move
+          </span>
           <img
             src={character}
             alt="character"
