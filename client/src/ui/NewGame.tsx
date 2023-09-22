@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import NewGameButton from './NewGameButton';
 import Modal from 'react-modal';
-import RulesModal from './RulesModal';
+import Credits from './Credits';
+import CreditsButton from './CreditsButton';
 
 interface NewGameProps {
   onClick: () => void;
@@ -40,6 +41,18 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
         maxLength={18} // Limit the input to 30 characters
       />
       <NewGameButton onClick={onClick} disabled={!username.trim()}></NewGameButton>
+      <CreditsButton onClick={toggleModal}></CreditsButton>
+      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} className="modal-base modal-medium" ariaHideApp={false}>
+        <div className="relative">
+          <button onClick={toggleModal} className="absolute top-[-10px] right-0 p-2">
+            <div className="relative w-6 h-6">
+              <div className="absolute inset-0 w-1 h-full bg-black transform rotate-45 origin-center"></div>
+              <div className="absolute inset-0 w-1 h-full bg-black transform -rotate-45 origin-center"></div>
+            </div>
+          </button>
+          <Credits />
+        </div>
+      </Modal>
     </div>
   );
 };

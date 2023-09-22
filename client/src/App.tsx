@@ -22,6 +22,7 @@ function App() {
   Modal.setAppElement('#root');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isRuleModalOpen, setRuleModalOpen] = useState(false);
+
   const [isLeaderBoardModalOpen, setLeaderBoardModalOpen] = useState(false);
   const [isMusicPlaying, setMusicPlaying] = useState(false);
 
@@ -51,23 +52,6 @@ function App() {
 
   const toggleRuleModal = () => {
     setRuleModalOpen(!isRuleModalOpen);
-  };
-
-  const modalStyle = {
-    content: {
-      top: '50%',
-      left: '50%',
-      width: '80%',
-      height: '57%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      fontSize: '16px',
-      border: '4px solid #000',
-      boxShadow: '5px 5px #000',
-      textColor: 'red',
-    },
   };
 
   const credits = async () => {
@@ -101,7 +85,6 @@ function App() {
         >
           Rules
         </button>
-        <CreditsButton onClick={credits}></CreditsButton>
         <button
           onClick={toggleMusic}
           className="p-2 mr-2 text-2xl w-6 "
@@ -115,7 +98,7 @@ function App() {
         <Canvas setMusicPlaying={setMusicPlaying} />
       </div>
 
-      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} style={modalStyle} ariaHideApp={false}>
+      <Modal isOpen={isModalOpen} onRequestClose={toggleModal} className="modal-base modal-medium" ariaHideApp={false}>
         <div className="relative">
           <button onClick={toggleModal} className="absolute top-[-10px] right-0 p-2">
             <div className="relative w-6 h-6">
@@ -127,7 +110,7 @@ function App() {
         </div>
       </Modal>
 
-      <Modal isOpen={isRuleModalOpen} onRequestClose={toggleRuleModal} style={modalStyle}>
+      <Modal isOpen={isRuleModalOpen} onRequestClose={toggleRuleModal} className="modal-base modal-large">
         <div className="relative">
           <button onClick={toggleRuleModal} className="absolute top-[-10px] right-0 p-2">
             <div className="relative w-6 h-6">
@@ -142,7 +125,7 @@ function App() {
       <Modal
         isOpen={isLeaderBoardModalOpen}
         onRequestClose={toggleLeaderBoardModal}
-        style={modalStyle}
+        className="modal-base modal-large"
         ariaHideApp={false}
       >
         <div className="relative">
