@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import NewGameButton from './NewGameButton';
+import Modal from 'react-modal';
+import RulesModal from './RulesModal';
 
 interface NewGameProps {
   onClick: () => void;
@@ -8,11 +10,16 @@ interface NewGameProps {
 
 const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
   const [username, setUsername] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setUsername(value);
     onPseudoChange(value); // Notify the parent of the change
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
