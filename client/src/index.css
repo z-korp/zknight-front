@@ -1,6 +1,6 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -27,4 +27,30 @@ body {
 
 canvas {
   display: block;
+}
+
+@layer components {
+  .modal-base {
+    @apply relative p-4 border-4 border-black rounded shadow-lg bg-white w-[80%] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-base;
+  }
+
+  .modal-header-close-btn {
+    @apply absolute top-[-10px] right-0 p-2;
+  }
+
+  .close-line {
+    @apply absolute inset-0 w-1 h-full bg-black origin-center;
+  }
+
+  .modal-small {
+    @apply h-48;
+  }
+
+  .modal-medium {
+    @apply h-[57%];
+  }
+
+  .modal-large {
+    @apply h-[85%];
+  }
 }
