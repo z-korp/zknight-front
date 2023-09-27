@@ -29,7 +29,7 @@ export function createSystemCalls(
     try {
       const tx = await execute(signer, 'Create', [ip, seed, pseudo]);
 
-      console.log(tx);
+      // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       })) as InvokeTransactionReceiptResponse;
@@ -61,7 +61,7 @@ export function createSystemCalls(
     try {
       const tx = await execute(signer, 'Play', [ip, x, y]);
 
-      console.log(tx);
+      // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       })) as InvokeTransactionReceiptResponse;
@@ -91,14 +91,14 @@ export function createSystemCalls(
     try {
       const tx = await execute(signer, 'Spawn', [ip]);
 
-      console.log(tx);
+      // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       })) as InvokeTransactionReceiptResponse;
 
       const events = receipt.events;
 
-      console.log(events);
+      // console.log(events);
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
         await executeEvents(eventsTransformed, add_hole, set_size, reset_holes, set_hit_mob, set_turn);
@@ -154,7 +154,7 @@ export async function executeEvents(
   }
 
   const characterEvents = events.filter((e): e is CharacterEvent & ComponentData => e.type === 'Character');
-  console.log('characterEvents', characterEvents);
+  // console.log('characterEvents', characterEvents);
   for (const e of characterEvents) {
     if (e.hitter !== 0) {
       set_turn(e.hitter);
@@ -163,7 +163,7 @@ export async function executeEvents(
       if (e._type === TileType.Barbarian) hit_mob = 'barbarian';
       else if (e._type === TileType.Bowman) hit_mob = 'bowman';
       else if (e._type === TileType.Wizard) hit_mob = 'wizard';
-      console.log('set_hit_mob', hit_mob);
+      // console.log('set_hit_mob', hit_mob);
       set_hit_mob(hit_mob);
     } else {
       set_turn(e._type);
@@ -279,11 +279,11 @@ function handleCharacterEvent(
 ): Omit<CharacterEvent, 'component' | 'componentValues' | 'entityIndex'> {
   const [game_id, _type] = keys.map((k) => Number(k));
   const [health, index, hitter, hit] = values.map((v) => Number(v));
-  console.log(
-    `[Character: KEYS: (game_id: ${game_id}, _type: ${_type}) - VALUES: (health: ${Number(health)}, index: ${Number(
-      index
-    )}, hitter: ${Number(hitter)}, hit: ${Number(hit)})]`
-  );
+  // console.log(
+  //   `[Character: KEYS: (game_id: ${game_id}, _type: ${_type}) - VALUES: (health: ${Number(health)}, index: ${Number(
+  //     index
+  //   )}, hitter: ${Number(hitter)}, hit: ${Number(hit)})]`
+  // );
   return {
     type: 'Character',
     game_id,
@@ -311,11 +311,11 @@ function handleTileEvent(
 ): Omit<TileEvent, 'component' | 'componentValues' | 'entityIndex'> {
   const [game_id, map_id, index] = keys.map((k) => Number(k));
   const [_type, x, y] = values.map((v) => Number(v));
-  console.log(
-    `[Tile: KEYS: (game_id: ${game_id}, map_id: ${map_id}, index: ${index}) - VALUES: (_type: ${Number(
-      _type
-    )}, (x: ${Number(x)}, y: ${Number(y)}))]`
-  );
+  // console.log(
+  //   `[Tile: KEYS: (game_id: ${game_id}, map_id: ${map_id}, index: ${index}) - VALUES: (_type: ${Number(
+  //     _type
+  //   )}, (x: ${Number(x)}, y: ${Number(y)}))]`
+  // );
   return {
     type: 'Tile',
     game_id,

@@ -20,6 +20,7 @@ import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
 import ResetButton from './ResetButton';
 import Sword from './Sword';
+import TurnStatus from './TurnStatus';
 
 interface CanvasProps {
   setMusicPlaying: (bool: boolean) => void;
@@ -339,9 +340,13 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
           {map.size !== 0 && <Sword targetY={getYFromMob(turn)} />}
         </Container>
       </Stage>
-
-      {map.size !== 0 && <ResetButton onClick={generateNewGame}></ResetButton>}
-      {map.size !== 0 && <PassTurnButton onClick={passTurn}></PassTurnButton>}
+      {map.size !== 0 && (
+        <div className="flex justify-between items-center -mt-20">
+          <ResetButton onClick={generateNewGame}></ResetButton>
+          <TurnStatus isProcessing={hasPlayed} />
+          <PassTurnButton onClick={passTurn}></PassTurnButton>
+        </div>
+      )}
       {map.size === 0 && <NewGame onClick={generateNewGame} onPseudoChange={setPseudo} />}
 
       <GameOverModal score={score} isOpen={isGameOver} onClose={() => setIsGameOver(false)} />
