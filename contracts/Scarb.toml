@@ -1,7 +1,7 @@
 [package]
 cairo-version = "2.2.0"
 name = "zknight"
-version = "0.0.0"
+version = "0.1.0"
 
 [cairo]
 sierra-replace-ids = true
