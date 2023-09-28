@@ -27,10 +27,10 @@ interface CanvasProps {
 }
 
 const getYFromMob = (m: TileType) => {
-  if (m === TileType.Knight) return 59;
+  if (m === TileType.Knight) return 57;
   else if (m === TileType.Barbarian) return 99;
-  else if (m === TileType.Bowman) return 139;
-  else return 189;
+  else if (m === TileType.Bowman) return 138;
+  else return 180;
 };
 
 const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
@@ -323,7 +323,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
                   <Text
                     text={m.charAt(0).toUpperCase() + m.slice(1)}
                     x={980}
-                    y={50 + (j - 2) * 40}
+                    y={48 + (j - 2) * 40}
                     style={
                       new PIXI.TextStyle({
                         align: 'center',
