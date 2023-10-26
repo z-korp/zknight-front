@@ -42,7 +42,6 @@ export const useDojo = () => {
   const { create, list, get, account, select, isDeploying } = useBurner({
     masterAccount: masterAccount,
     accountClassHash: import.meta.env.VITE_PUBLIC_ACCOUNT_CLASS_HASH!,
-    nodeUrl: import.meta.env.VITE_PUBLIC_NODE_URL!,
   });
 
   return {

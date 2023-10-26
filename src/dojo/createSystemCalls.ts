@@ -1,6 +1,6 @@
 import { Component, Components, EntityIndex, Schema, setComponent, updateComponent } from '@latticexyz/recs';
 import { poseidonHashMany } from 'micro-starknet';
-import { Account, Event, InvokeTransactionReceiptResponse, shortString } from 'starknet';
+import { Account, Call, Event, InvokeTransactionReceiptResponse, shortString } from 'starknet';
 import { TileType } from '../hooks/useComponentStates';
 import { MobType } from '../ui/Mob';
 import { ClientComponents } from './createClientComponents';
@@ -27,7 +27,17 @@ export function createSystemCalls(
     set_turn: (mob: TileType) => void
   ) => {
     try {
-      const tx = await execute(signer, 'Create', [ip, seed, pseudo]);
+      console.log(import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS);
+      console.log(import.meta.env.VITE_PUBLIC_WORLD_ADDRESS);
+      const calls: Call[] = [
+        {
+          contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
+          entrypoint: 'create',
+          calldata: [import.meta.env.VITE_PUBLIC_WORLD_ADDRESS, ip, seed, pseudo],
+        },
+      ];
+
+      const tx = await execute(signer, calls);
 
       // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
@@ -59,7 +69,15 @@ export function createSystemCalls(
     set_turn: (mob: TileType) => void
   ) => {
     try {
-      const tx = await execute(signer, 'Play', [ip, x, y]);
+      const calls: Call[] = [
+        {
+          contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
+          entrypoint: 'play',
+          calldata: [import.meta.env.VITE_PUBLIC_WORLD_ADDRESS, ip, x, y],
+        },
+      ];
+
+      const tx = await execute(signer, calls);
 
       // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
@@ -89,7 +107,14 @@ export function createSystemCalls(
     set_turn: (mob: TileType) => void
   ) => {
     try {
-      const tx = await execute(signer, 'Spawn', [ip]);
+      const calls: Call[] = [
+        {
+          contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
+          entrypoint: 'spawn',
+          calldata: [import.meta.env.VITE_PUBLIC_WORLD_ADDRESS, ip],
+        },
+      ];
+      const tx = await execute(signer, calls);
 
       // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {

@@ -1,18 +1,23 @@
 import { Query, RPCProvider } from '@dojoengine/core';
 import { GraphQLClient } from 'graphql-request';
-import { Account, num } from 'starknet';
+import { Account, AllowArray, Call } from 'starknet';
 import { getSdk } from '../generated/graphql';
 import { defineContractComponents } from './contractComponents';
+import manifest from './manifest.json';
 import { world } from './world';
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+
+export const getContractByName = (name: string) => {
+  return manifest.contracts.find((contract) => contract.name === name);
+};
 
 export async function setupNetwork() {
   // Extract environment variables for better readability.
   const { VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL, VITE_PUBLIC_TORII } = import.meta.env;
 
   // Create a new RPCProvider instance.
-  const provider = new RPCProvider(VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL);
+  const provider = new RPCProvider(VITE_PUBLIC_WORLD_ADDRESS, manifest, VITE_PUBLIC_NODE_URL);
 
   // Utility function to get the SDK.
   const createGraphSdk = () => getSdk(new GraphQLClient(VITE_PUBLIC_TORII));
@@ -29,8 +34,10 @@ export async function setupNetwork() {
     graphSdk: createGraphSdk(),
 
     // Execute function.
-    execute: async (signer: Account, system: string, call_data: num.BigNumberish[]) => {
-      return provider.execute(signer, system, call_data);
+    execute: async (signer: Account, calls: AllowArray<Call>) => {
+      const formattedCalls = Array.isArray(calls) ? calls : [calls];
+
+      return provider.executeMulti(signer, formattedCalls);
     },
 
     // Entity query function.
@@ -41,11 +48,6 @@ export async function setupNetwork() {
     // Entities query function.
     entities: async (component: string, partition: number) => {
       return provider.entities(component, partition);
-    },
-
-    // Call function.
-    call: async (selector: string, call_data: num.BigNumberish[]) => {
-      return provider.call(selector, call_data);
     },
   };
 }
