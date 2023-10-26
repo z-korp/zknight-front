@@ -27,8 +27,6 @@ export function createSystemCalls(
     set_turn: (mob: TileType) => void
   ) => {
     try {
-      console.log(import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS);
-      console.log(import.meta.env.VITE_PUBLIC_WORLD_ADDRESS);
       const calls: Call[] = [
         {
           contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
@@ -388,16 +386,28 @@ export async function setComponentsFromEvents(components: Components, events: Ev
 
     switch (componentName) {
       case 'Map':
-        transformedEvents.push({ ...handleMapEvent(keys, values), ...baseEventData });
+        transformedEvents.push({
+          ...handleMapEvent(keys, values),
+          ...baseEventData,
+        });
         break;
       case 'Game':
-        transformedEvents.push({ ...handleGameEvent(keys, values), ...baseEventData });
+        transformedEvents.push({
+          ...handleGameEvent(keys, values),
+          ...baseEventData,
+        });
         break;
       case 'Tile':
-        transformedEvents.push({ ...handleTileEvent(keys, values), ...baseEventData });
+        transformedEvents.push({
+          ...handleTileEvent(keys, values),
+          ...baseEventData,
+        });
         break;
       case 'Character':
-        transformedEvents.push({ ...handleCharacterEvent(keys, values), ...baseEventData });
+        transformedEvents.push({
+          ...handleCharacterEvent(keys, values),
+          ...baseEventData,
+        });
         break;
     }
   }

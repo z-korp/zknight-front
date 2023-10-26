@@ -8,10 +8,6 @@ import { world } from './world';
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
-export const getContractByName = (name: string) => {
-  return manifest.contracts.find((contract) => contract.name === name);
-};
-
 export async function setupNetwork() {
   // Extract environment variables for better readability.
   const { VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL, VITE_PUBLIC_TORII } = import.meta.env;
