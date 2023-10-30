@@ -454,7 +454,7 @@ export type GetFinishedGamesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFinishedGamesQuery = {
   __typename?: 'Query';
-  mapComponents?: {
+  mapModels?: {
     __typename?: 'MapConnection';
     edges?: Array<{
       __typename?: 'MapEdge';
