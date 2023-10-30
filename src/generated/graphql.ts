@@ -508,7 +508,7 @@ export const GetEntitiesDocument = gql`
 `;
 export const GetFinishedGamesDocument = gql`
   query getFinishedGames {
-    mapComponents(first: 10000) {
+    mapModels(first: 10000) {
       edges {
         node {
           score
