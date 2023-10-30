@@ -111,7 +111,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   useEffect(() => {
     if (mapState.level) setLevel(mapState.level);
-  }, [mapState]);
+  }, [mapState.level]);
 
   useEffect(() => {
     if (mapState.spawn === 0) {
