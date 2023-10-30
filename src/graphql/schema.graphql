@@ -1,23 +1,11 @@
 query getFinishedGames {
-  gameModels(first: 10000) {
-    edges {
-      node {
-        game_id
-        score
-        over
-        name
-      }
-    }
-  }
-}
-
-query getFinishedMaps {
   mapModels(first: 10000) {
     edges {
       node {
         score
         over
         name
+        level
       }
     }
   }
