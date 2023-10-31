@@ -19,8 +19,8 @@ const isOtherOnThisTile = (tile: Coordinate, mobs: any): boolean => {
   return false;
 };
 
-export const useGrid = (grid: GridElement[][]): any => {
-  const mobs = useComponentStates();
+export const useGrid = (grid: GridElement[][], Character: any, Game: any, Map: any, Tile: any): any => {
+  const mobs = useComponentStates(Character, Game, Map, Tile);
 
   const [knightNeighbors, setKnightNeighbors] = useState<ActionableTile[]>([]);
   const [barbarianNeighbors, setBarbarianNeighbors] = useState<ActionableTile[]>([]);
