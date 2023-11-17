@@ -2,7 +2,6 @@ import { Container, Sprite, Stage, Text } from '@pixi/react';
 import * as PIXI from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { shortString } from 'starknet';
-import { useDojo } from '../DojoContext';
 import heart from '../assets/heart1.png';
 import skull from '../assets/skull.png';
 import { TileType, useComponentStates } from '../hooks/useComponentStates';
@@ -14,7 +13,7 @@ import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, generateGrid, to_grid_coordina
 import { getNeighbors } from '../utils/pathfinding';
 import { useElementStore } from '../utils/store';
 import GameOverModal from './GameOverModal'; // importez le composant
-import Map from './Map';
+import MapComponent from './Map';
 import Mob, { MobType } from './Mob';
 import NewGame from './NewGame';
 import PassTurnButton from './PassTurnButton';
@@ -24,6 +23,15 @@ import TurnStatus from './TurnStatus';
 
 interface CanvasProps {
   setMusicPlaying: (bool: boolean) => void;
+  play: any;
+  spawn: any;
+  create: any;
+  Character: any;
+  Game: any;
+  Map: any;
+  Tile: any;
+  graphSdk: any;
+  account: any;
 }
 
 const getYFromMob = (m: TileType) => {
@@ -33,23 +41,25 @@ const getYFromMob = (m: TileType) => {
   else return 180;
 };
 
-const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
-  const {
-    setup: {
-      systemCalls: { play, spawn, create },
-      network: { graphSdk },
-    },
-    account: { account },
-  } = useDojo();
-
-  const contractState = useComponentStates();
+const Canvas: React.FC<CanvasProps> = ({
+  setMusicPlaying,
+  play,
+  spawn,
+  create,
+  Character,
+  Game,
+  Map,
+  Tile,
+  graphSdk,
+  account,
+}) => {
+  const contractState = useComponentStates(Character, Game, Map, Tile);
   const { knight, barbarian, wizard, bowman, hitter, game, map: mapState, hitPosition } = contractState;
 
   const [score, setScore] = useState<number>(0);
   const [level, setLevel] = useState<number>(0);
   const [grid, setGrid] = useState<GridElement[][]>([]);
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
-  const [hoveredMob, setHoveredMob] = useState<MobType | undefined>(undefined);
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate | undefined>(undefined);
   const [isGameOver, setIsGameOver] = useState(false);
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -111,7 +121,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
 
   useEffect(() => {
     if (mapState.level) setLevel(mapState.level);
-  }, [mapState]);
+  }, [mapState.level]);
 
   useEffect(() => {
     if (mapState.spawn === 0) {
@@ -119,7 +129,13 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
     }
   }, [mapState.spawn]);
 
-  const { knightNeighbors, barbarianNeighbors, bowmanNeighbors, wizardNeighbors } = useGrid(grid);
+  const { knightNeighbors, barbarianNeighbors, bowmanNeighbors, wizardNeighbors } = useGrid(
+    grid,
+    Character,
+    Game,
+    Map,
+    Tile
+  );
 
   const passTurn = () => {
     // pass turn is a play but with same position
@@ -178,7 +194,7 @@ const Canvas: React.FC<CanvasProps> = ({ setMusicPlaying }) => {
         }}
       >
         <Container sortableChildren={true}>
-          <Map hoveredTile={hoveredTile} />
+          <MapComponent hoveredTile={hoveredTile} />
 
           {knight.position && knight.health !== undefined && (
             <Mob

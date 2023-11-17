@@ -1,7 +1,6 @@
 import { useComponentValue } from '@dojoengine/react';
 import { EntityIndex } from '@latticexyz/recs';
 import { useEffect, useState } from 'react';
-import { useDojo } from '../DojoContext';
 import { getEntityIdFromKeys } from '../dojo/createSystemCalls';
 import { Coordinate } from '../type/GridElement';
 import { MobType } from '../ui/Mob';
@@ -59,13 +58,7 @@ const getHitPosition = (
   return undefined;
 };
 
-export const useComponentStates = () => {
-  const {
-    setup: {
-      components: { Character, Game, Map, Tile },
-    },
-  } = useDojo();
-
+export const useComponentStates = (Character: any, Game: any, Map: any, Tile: any) => {
   const { ip, hit_mob } = useElementStore((state) => state);
 
   const entityId = ip as EntityIndex;

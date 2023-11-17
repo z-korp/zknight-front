@@ -6,10 +6,10 @@ export const fetchData = async (graphSdk: any): Promise<{ stage: number; score: 
 
     console.log('data', data);
 
-    if (data && data.mapComponents && data.mapComponents.edges) {
+    if (data && data.mapModels && data.mapModels.edges) {
       const gameComponentsWithKeys: any[] = [];
 
-      data.mapComponents.edges.forEach((edge: any) => {
+      data.mapModels.edges.forEach((edge: any) => {
         if (edge && edge.node?.score !== undefined && edge.node?.name && edge.node?.level) {
           gameComponentsWithKeys.push({
             score: edge.node?.score,

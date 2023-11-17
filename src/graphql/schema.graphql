@@ -1,59 +1,11 @@
-query getEntities {
-  entities(keys: ["%"]) {
-    edges {
-      node {
-        keys
-        components {
-          __typename
-          ... on Game {
-            game_id
-            score
-            over
-            seed
-            name
-          }
-          ... on Map {
-            level
-            size
-            spawn
-          }
-          ... on Character {
-            health
-            index
-            hitter
-            hit
-          }
-          ... on Tile {
-            _type
-            x
-            y
-          }
-        }
-      }
-    }
-  }
-}
-
 query getFinishedGames {
-  gameComponents(first: 10000) {
-    edges {
-      node {
-        game_id
-        score
-        over
-        name
-      }
-    }
-  }
-}
-
-query getFinishedMaps {
-  mapComponents(first: 10000) {
+  mapModels(first: 10000) {
     edges {
       node {
         score
         over
         name
+        level
       }
     }
   }

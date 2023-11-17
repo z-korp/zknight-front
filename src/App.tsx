@@ -5,18 +5,20 @@ import Modal from 'react-modal';
 import { useDojo } from './DojoContext';
 import Canvas from './ui/Canvas';
 import Credits from './ui/Credits';
-import CreditsButton from './ui/CreditsButton';
 import LeaderBoardButton from './ui/LeaderBoardButton';
 import Leaderboard from './ui/Leaderboard';
+import RulesModal from './ui/RulesModal';
 import { fetchData } from './utils/fetchData';
 import { useElementStore } from './utils/store';
-import RulesModal from './ui/RulesModal';
 
 function App() {
   const {
     setup: {
+      systemCalls: { play, spawn, create },
       network: { graphSdk },
+      components: { Character, Game, Map, Tile },
     },
+    account: { account },
   } = useDojo();
 
   Modal.setAppElement('#root');
@@ -95,7 +97,18 @@ function App() {
       </div>
 
       <div className="flex-grow mx-auto mt-2">
-        <Canvas setMusicPlaying={setMusicPlaying} />
+        <Canvas
+          setMusicPlaying={setMusicPlaying}
+          play={play}
+          spawn={spawn}
+          create={create}
+          Character={Character}
+          Game={Game}
+          Map={Map}
+          Tile={Tile}
+          graphSdk={graphSdk}
+          account={account}
+        />
       </div>
 
       <Modal isOpen={isModalOpen} onRequestClose={toggleModal} className="modal-base modal-medium" ariaHideApp={false}>
