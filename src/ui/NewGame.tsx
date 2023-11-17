@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NewGameButton from './NewGameButton';
 import Modal from 'react-modal';
 import Credits from './Credits';
@@ -12,7 +12,7 @@ interface NewGameProps {
 const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
   const [username, setUsername] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setUsername(value);
@@ -23,6 +23,11 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
     setIsModalOpen(!isModalOpen);
   };
 
+  useEffect(() => {
+    const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(prefersDarkMode);
+  }, []);
+
   return (
     <div
       className="w-full max-w-xs"
@@ -32,7 +37,9 @@ const NewGame: React.FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
         Username
       </label>
       <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={`shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline ${
+          isDarkMode ? 'text-white' : 'text-gray-700'
+        }`}
         id="pseudo"
         type="text"
         placeholder="Pseudo"
